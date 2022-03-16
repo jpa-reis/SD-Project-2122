@@ -9,6 +9,7 @@ import java.net.MulticastSocket;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.logging.Logger;
@@ -48,6 +49,8 @@ public class Discovery {
 	private String serviceName;
 	private String serviceURI;
 
+	private ConcurrentHashMap<String, ArrayList<URI>> runningServices;
+
 	/**
 	 * @param  serviceName the name of the service to announce
 	 * @param  serviceURI an uri string - representing the contact endpoint of the service being announced
@@ -56,6 +59,7 @@ public class Discovery {
 		this.addr = addr;
 		this.serviceName = serviceName;
 		this.serviceURI  = serviceURI;
+		runningServices = new ConcurrentHashMap<>();
 	}
 	
 	/**
@@ -114,7 +118,13 @@ public class Discovery {
 						var tokens = msg.split(DELIMITER);
 
 						if (tokens.length == 2) {
-							//TODO: to complete by recording the received information from the other node.
+							URI receivedURI = URI.create(tokens[1]);
+							if(!runningServices.containsKey(tokens[0])){
+								runningServices.put(tokens[0], new ArrayList<>(Arrays.asList(receivedURI)));
+							}
+							else if(!runningServices.get(tokens[0]).contains(receivedURI)){
+								runningServices.get(tokens[0]).add(receivedURI);
+							}
 						}
 					} catch (IOException e) {
 						e.printStackTrace();
@@ -140,8 +150,7 @@ public class Discovery {
 	 * 
 	 */
 	public URI[] knownUrisOf(String serviceName) {
-		//TODO: You have to implement this!!
-		throw new Error("Not Implemented...");
+		return runningServices.get(serviceName).toArray( n -> new URI[n]);
 	}	
 	
 	private void joinGroupInAllInterfaces(MulticastSocket ms) throws SocketException {
@@ -155,6 +164,8 @@ public class Discovery {
 			}
 		}
 	}	
+
+
 
 	/**
 	 * Starts sending service announcements at regular intervals... 
