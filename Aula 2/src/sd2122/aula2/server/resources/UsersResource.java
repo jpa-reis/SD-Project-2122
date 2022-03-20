@@ -101,8 +101,30 @@ public class UsersResource implements RestUsers {
 	@Override
 	public User deleteUser(String userId, String password) {
 		Log.info("deleteUser : user = " + userId + "; pwd = " + password);
-		// TODO Complete method
-		throw new WebApplicationException( Status.NOT_IMPLEMENTED );
+		
+		// Check if user is valid
+		if(userId == null || password == null) {
+			Log.info("UserId or passwrod null.");
+			throw new WebApplicationException( Status.BAD_REQUEST );
+		}
+		
+		User user = users.get(userId);
+		
+		// Check if user exists 
+		if( user == null ) {
+			Log.info("User does not exist.");
+			throw new WebApplicationException( Status.NOT_FOUND );
+		}
+		
+		//Check if the password is correct
+		if( !user.getPassword().equals( password)) {
+			Log.info("Password is incorrect.");
+			throw new WebApplicationException( Status.FORBIDDEN );
+		}
+
+		users.remove(userId);
+		
+		return user;
 	}
 
 
