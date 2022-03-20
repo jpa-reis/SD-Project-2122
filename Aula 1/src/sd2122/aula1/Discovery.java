@@ -126,6 +126,12 @@ public class Discovery {
 								runningServices.get(tokens[0]).add(receivedURI);
 							}
 						}
+						if(runningServices.size() == 1 && runningServices.get(tokens[0]).size() == 2){
+							System.out.print("a");
+							System.out.print(runningServices.get(tokens[0]).get(0));
+							System.out.print(runningServices.get(tokens[0]).get(1));
+						}
+						
 					} catch (IOException e) {
 						e.printStackTrace();
 						try {
