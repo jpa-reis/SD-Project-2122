@@ -75,8 +75,26 @@ public class UsersResource implements RestUsers {
 	@Override
 	public User updateUser(String userId, String password, User user) {
 		Log.info("updateUser : user = " + userId + "; pwd = " + password + " ; user = " + user);
-		// TODO Complete method
-		throw new WebApplicationException( Status.NOT_IMPLEMENTED );
+		
+		//Check if arguments are valid
+		if(userId == null || password == null || user == null){
+			Log.info("UserId, passwrod or User null.");
+			throw new WebApplicationException(Status.BAD_REQUEST);
+		}
+
+		//Check if there is a user with the provided userId
+		if(users.get(userId).equals(null)){
+			Log.info("User does not exist.");
+			throw new WebApplicationException(Status.NOT_FOUND);
+		}
+		//Check if the password if incorrect
+		if(!password.equals(users.get(userId).getPassword())){
+			Log.info("Password is incorrect.");
+			throw new WebApplicationException(Status.FORBIDDEN);
+		}
+		users.replace(userId, user);
+
+		return user;
 	}
 
 
