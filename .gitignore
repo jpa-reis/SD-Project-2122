@@ -22,4 +22,5 @@
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 
-folder_to_ignore/target
+folder_to_ignore/'Aula 1'/target
+folder_to_ignore/'Aula 2'/target
