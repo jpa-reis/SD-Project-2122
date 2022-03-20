@@ -131,8 +131,24 @@ public class UsersResource implements RestUsers {
 	@Override
 	public List<User> searchUsers(String pattern) {
 		Log.info("searchUsers : pattern = " + pattern);
-		// TODO Complete method
-		throw new WebApplicationException( Status.NOT_IMPLEMENTED );
+
+		// Check if user is valid
+		if(pattern == null) {
+			Log.info("Pattern null.");
+			throw new WebApplicationException( Status.BAD_REQUEST );
+		}
+
+
+		List<User> listUsers = new ArrayList<User>();
+		
+		Set<String> userIds = users.keySet();
+		for (String userId : userIds){
+			String name = users.get(userId).getFullName();
+			if(name.contains(pattern))
+				listUsers.add(users.get(userId));
+		}
+
+		return listUsers;
 	}
 
 }
