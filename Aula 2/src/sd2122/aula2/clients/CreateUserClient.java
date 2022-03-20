@@ -19,25 +19,31 @@ public class CreateUserClient {
 
 	public static void main(String[] args) throws IOException {
 		
-		if( args.length != 5) {
+		if( args.length != 4) {
 			System.err.println( "Use: java sd2122.aula2.clients.CreateUserClient url userId fullName email password");
 			return;
 		}
-		
-		String serverUrl = args[0];
-		String userId = args[1];
-		String fullName = args[2];
-		String email = args[3];
-		String password = args[4];
+
+		Discovery findServer = new Discovery(Discovery.DISCOVERY_ADDR, "user", RestUsers.PATH);
+		findServer.listener();
+
+		String userId = args[0];
+		String fullName = args[1];
+		String email = args[2];
+		String password = args[3];
+
 		
 		User u = new User( userId, fullName, email, password);
 		
+		while(findServer.knownUrisOf("userServer").length == 0){}
+
 		System.out.println("Sending request to server.");
 		
 		ClientConfig config = new ClientConfig();
 		Client client = ClientBuilder.newClient(config);
 		
-		WebTarget target = client.target( serverUrl ).path( RestUsers.PATH );
+		
+		WebTarget target = client.target( findServer.knownUrisOf("userServer")[0]).path( RestUsers.PATH );
 		
 		Response r = target.request()
 				.accept(MediaType.APPLICATION_JSON)
