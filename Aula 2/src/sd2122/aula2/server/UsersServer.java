@@ -9,6 +9,8 @@ import org.glassfish.jersey.server.ResourceConfig;
 
 import sd2122.aula2.server.resources.UsersResource;
 
+import sd2122.aula2.Discovery;
+
 public class UsersServer {
 
 	private static Logger Log = Logger.getLogger(UsersServer.class.getName());
@@ -21,18 +23,23 @@ public class UsersServer {
 	public static final int PORT = 8080;
 	public static final String SERVICE = "UsersService";
 	private static final String SERVER_URI_FMT = "http://%s:%s/rest";
+
 	
 	public static void main(String[] args) {
 		try {
-			
 		ResourceConfig config = new ResourceConfig();
 		config.register(UsersResource.class);
 
+		
 		String ip = InetAddress.getLocalHost().getHostAddress();
 		String serverURI = String.format(SERVER_URI_FMT, ip, PORT);
 		JdkHttpServerFactory.createHttpServer( URI.create(serverURI), config);
 	
 		Log.info(String.format("%s Server ready @ %s\n",  SERVICE, serverURI));
+
+		Discovery discovery = new Discovery(Discovery.DISCOVERY_ADDR ,SERVICE, serverURI);
+		discovery.announce(SERVICE, serverURI);
+		discovery.listener();
 		
 		//More code can be executed here...
 		} catch( Exception e) {
