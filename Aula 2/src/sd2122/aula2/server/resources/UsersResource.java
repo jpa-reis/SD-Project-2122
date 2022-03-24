@@ -134,22 +134,28 @@ public class UsersResource implements RestUsers {
 	public List<User> searchUsers(String pattern) {
 		Log.info("searchUsers : pattern = " + pattern);
 
-		// Check if user is valid
+		List<User> listUsers = new ArrayList<User>();
+
+		//Check if there are no users
+		if(users.isEmpty()){
+			return listUsers;
+		}
+
+		Set<String> userIds = users.keySet();
+
+		// Check if the pattern is valid
 		if(pattern == null) {
 			Log.info("Pattern null.");
-			throw new WebApplicationException( Status.BAD_REQUEST );
-		}
-
-
-		List<User> listUsers = new ArrayList<User>();
-		
-		Set<String> userIds = users.keySet();
-		for (String userId : userIds){
-			String name = users.get(userId).getFullName();
-			if(name.contains(pattern))
+			for (String userId : userIds){
 				listUsers.add(users.get(userId));
+			}
+		}else{
+			for (String userId : userIds){
+				String name = users.get(userId).getFullName();
+				if(name.contains(pattern))
+					listUsers.add(users.get(userId));
+			}
 		}
-
 		return listUsers;
 	}
 
