@@ -30,20 +30,23 @@ public class RestUsersClient extends RestClient implements RestUsers {
 
 	@Override
 	public User getUser(String userId, String password) {
-		// TODO Auto-generated method stub
-		return null;
+		return super.reTry( () -> {
+			return clt_getUser(userId, password);
+		});
 	}
 
 	@Override
 	public User updateUser(String userId, String password, User user) {
-		// TODO Auto-generated method stub
-		return null;
+		return super.reTry( () -> {
+			return clt_updateUser(userId, password, user);
+		});
 	}
 
 	@Override
 	public User deleteUser(String userId, String password) {
-		// TODO Auto-generated method stub
-		return null;
+		return super.reTry( () -> {
+			return clt_deleteUser(userId, password);
+		});
 	}
 
 	@Override
@@ -80,4 +83,47 @@ public class RestUsersClient extends RestClient implements RestUsers {
 		
 		return null;
 	}
+
+	private User clt_deleteUser(String userId, String password) {
+		Response r = target.path( userId )
+				.queryParam(RestUsers.PASSWORD, password).request()
+				.accept(MediaType.APPLICATION_JSON)
+				.delete();
+
+		if( r.getStatus() == Status.OK.getStatusCode() && r.hasEntity() ) {
+			System.out.println("Success:");
+		} else
+			System.out.println("Error, HTTP error status: " + r.getStatus() );	
+		return null;
+	}
+
+	private User clt_updateUser(String userId, String oldpwd, User u) {
+		Response r = target.path(userId)
+				.queryParam(RestUsers.PASSWORD, oldpwd)
+				.request()
+				.accept(MediaType.APPLICATION_JSON)
+				.put(Entity.entity(u, MediaType.APPLICATION_JSON));
+		
+				if( r.getStatus() == Status.OK.getStatusCode() && r.hasEntity() )
+				System.out.println("Success, user was updated");
+			else
+				System.out.println("Error, HTTP error status: " + r.getStatus() );
+		return null;
+	}
+
+	private User clt_getUser(String userId, String password) {
+		Response r = target.path( userId )
+				.queryParam(RestUsers.PASSWORD, password).request()
+				.accept(MediaType.APPLICATION_JSON)
+				.get();
+
+		if( r.getStatus() == Status.OK.getStatusCode() && r.hasEntity() ) {
+			System.out.println("Success:");
+			User u = r.readEntity(User.class);
+			System.out.println( "User : " + u);
+		} else
+			System.out.println("Error, HTTP error status: " + r.getStatus() );
+		return null;
+	}
+
 }
