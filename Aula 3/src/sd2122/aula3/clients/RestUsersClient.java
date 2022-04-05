@@ -1,6 +1,7 @@
 package sd2122.aula3.clients;
 
 import java.net.URI;
+import java.util.Arrays;
 import java.util.List;
 
 import jakarta.ws.rs.client.Entity;
@@ -76,8 +77,12 @@ public class RestUsersClient extends RestClient implements RestUsers {
 				.accept(MediaType.APPLICATION_JSON)
 				.get();
 
-		if( r.getStatus() == Status.OK.getStatusCode() && r.hasEntity() )
-			return r.readEntity(new GenericType<List<User>>() {});
+		if( r.getStatus() == Status.OK.getStatusCode() && r.hasEntity() ){
+			System.out.println("Success:");
+			List<User> u = r.readEntity(new GenericType<List<User>>() {});
+			System.out.println(Arrays.toString(u.toArray()));
+		}
+			
 		else 
 			System.out.println("Error, HTTP error status: " + r.getStatus() );
 		
@@ -91,7 +96,7 @@ public class RestUsersClient extends RestClient implements RestUsers {
 				.delete();
 
 		if( r.getStatus() == Status.OK.getStatusCode() && r.hasEntity() ) {
-			System.out.println("Success:");
+			System.out.println("Success: user was deleted");
 		} else
 			System.out.println("Error, HTTP error status: " + r.getStatus() );	
 		return null;
@@ -104,7 +109,7 @@ public class RestUsersClient extends RestClient implements RestUsers {
 				.accept(MediaType.APPLICATION_JSON)
 				.put(Entity.entity(u, MediaType.APPLICATION_JSON));
 		
-				if( r.getStatus() == Status.OK.getStatusCode() && r.hasEntity() )
+			if( r.getStatus() == Status.OK.getStatusCode() && r.hasEntity() )
 				System.out.println("Success, user was updated");
 			else
 				System.out.println("Error, HTTP error status: " + r.getStatus() );

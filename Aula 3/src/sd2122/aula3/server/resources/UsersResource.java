@@ -50,22 +50,16 @@ public class UsersResource implements RestUsers {
 	public User getUser(String userId, String password) {
 		Log.info("getUser : user = " + userId + "; pwd = " + password);
 		
-		// Check if user is valid
-		if(userId == null || password == null) {
-			Log.info("UserId or passwrod null.");
-			throw new WebApplicationException( Status.BAD_REQUEST );
-		}
-		
 		User user = users.get(userId);
 		
 		// Check if user exists 
-		if( user == null ) {
+		if( user == null) {
 			Log.info("User does not exist.");
 			throw new WebApplicationException( Status.NOT_FOUND );
 		}
 		
 		//Check if the password is correct
-		if( !user.getPassword().equals( password)) {
+		if( !user.getPassword().equals(password)) {
 			Log.info("Password is incorrect.");
 			throw new WebApplicationException( Status.FORBIDDEN );
 		}
@@ -77,15 +71,11 @@ public class UsersResource implements RestUsers {
 	@Override
 	public User updateUser(String userId, String password, User user) {
 		Log.info("updateUser : user = " + userId + "; pwd = " + password + " ; user = " + user);
-		
-		//Check if arguments are valid
-		if(userId == null || password == null || user == null){
-			Log.info("UserId, passwrod or User null.");
-			throw new WebApplicationException(Status.BAD_REQUEST);
-		}
+
+		User original = users.get(userId);
 
 		//Check if there is a user with the provided userId
-		if(users.get(userId).equals(null)){
+		if(users.get(userId) == null){
 			Log.info("User does not exist.");
 			throw new WebApplicationException(Status.NOT_FOUND);
 		}
@@ -94,6 +84,10 @@ public class UsersResource implements RestUsers {
 			Log.info("Password is incorrect.");
 			throw new WebApplicationException(Status.FORBIDDEN);
 		}
+		if(user.getEmail() == null) user.setEmail(original.getEmail());
+		if(user.getFullName() == null) user.setFullName(original.getFullName());
+		if(user.getUserId() != original.getUserId()) user.setUserId(original.getUserId());
+		if(user.getPassword() == null) user.setPassword(original.getPassword());
 		users.replace(userId, user);
 
 		return user;
@@ -103,12 +97,6 @@ public class UsersResource implements RestUsers {
 	@Override
 	public User deleteUser(String userId, String password) {
 		Log.info("deleteUser : user = " + userId + "; pwd = " + password);
-		
-		// Check if user is valid
-		if(userId == null || password == null) {
-			Log.info("UserId or passwrod null.");
-			throw new WebApplicationException( Status.BAD_REQUEST );
-		}
 		
 		User user = users.get(userId);
 		
@@ -152,10 +140,17 @@ public class UsersResource implements RestUsers {
 		}else{
 			for (String userId : userIds){
 				String name = users.get(userId).getFullName();
-				if(name.contains(pattern))
-					listUsers.add(users.get(userId));
+				if(name.toUpperCase().contains(pattern.toUpperCase())){
+					User currentUser = users.get(userId);
+					listUsers.add(new User(currentUser.getUserId(),currentUser.getFullName(),currentUser.getEmail(),currentUser.getPassword()));
+				}
+					
 			}
 		}
+		for (int i = 0; i < listUsers.size(); i++){
+				listUsers.get(i).setPassword("");
+		}
+
 		return listUsers;
 	}
 

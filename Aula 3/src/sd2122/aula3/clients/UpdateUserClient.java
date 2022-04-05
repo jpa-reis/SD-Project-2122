@@ -56,7 +56,7 @@ public class UpdateUserClient {
 		URI[] userServiceURIS = listener.knownUrisOf(SERVICE);
 		
 		System.out.println("Sending request to server.");
-		new RestUsersClient(userServiceURIS[0]).updateUser(userId, password, u);
+		new RestUsersClient(userServiceURIS[0]).updateUser(userId, oldpwd, u);
 	}
 	
 }
