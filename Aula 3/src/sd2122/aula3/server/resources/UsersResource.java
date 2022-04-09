@@ -132,25 +132,14 @@ public class UsersResource implements RestUsers {
 		Set<String> userIds = users.keySet();
 
 		// Check if the pattern is valid
-		if(pattern == null) {
-			Log.info("Pattern null.");
-			for (String userId : userIds){
-				listUsers.add(users.get(userId));
+		for (String userId : userIds){
+			String name = users.get(userId).getFullName();
+			if(name.toUpperCase().contains(pattern.toUpperCase())){
+				User currentUser = users.get(userId);
+				listUsers.add(new User(currentUser.getUserId(),currentUser.getFullName(),currentUser.getEmail(),""));
 			}
-		}else{
-			for (String userId : userIds){
-				String name = users.get(userId).getFullName();
-				if(name.toUpperCase().contains(pattern.toUpperCase())){
-					User currentUser = users.get(userId);
-					listUsers.add(new User(currentUser.getUserId(),currentUser.getFullName(),currentUser.getEmail(),currentUser.getPassword()));
-				}
 					
-			}
 		}
-		for (int i = 0; i < listUsers.size(); i++){
-				listUsers.get(i).setPassword("");
-		}
-
 		return listUsers;
 	}
 
