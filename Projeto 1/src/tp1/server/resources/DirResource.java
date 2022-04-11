@@ -24,6 +24,7 @@ public class DirResource implements RestDirectory{
 	public DirResource() {
 	}
 
+    //Palma
     @Override
     public FileInfo writeFile(String filename, byte[] data, String userId, String password) {
         Log.info("writeFile : " + filename);
@@ -41,32 +42,37 @@ public class DirResource implements RestDirectory{
     }
     
 
-}
 
+    //Palma
     @Override
     public void deleteFile(String filename, String userId, String password) {
         // TODO Auto-generated method stub
         
     }
 
+    //Reis
     @Override
     public void shareFile(String filename, String userId, String userIdShare, String password) {
         // TODO Auto-generated method stub
         
     }
 
+    //Reis
     @Override
     public void unshareFile(String filename, String userId, String userIdShare, String password) {
         // TODO Auto-generated method stub
         
     }
 
+
+    //Reis
     @Override
     public byte[] getFile(String filename, String userId, String accUserId, String password) {
         // TODO Auto-generated method stub
         return null;
     }
 
+    //Palma
     @Override
     public List<FileInfo> lsFile(String userId, String password) {
         // TODO Auto-generated method stub
