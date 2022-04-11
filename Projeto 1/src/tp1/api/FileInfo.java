@@ -14,6 +14,7 @@ public class FileInfo {
 	private String filename;
 	/**
 	 * URL for direct access to a file
+	 * For SOAP, URL must be of format: http://ip:port/soap/files/fileid
 	 */
 	private String fileURL;
 	/**
