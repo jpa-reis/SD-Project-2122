@@ -1,29 +1,31 @@
-/home/jpareis/Desktop/SD/sd2122-tp-api/src/tp1/clients/RestClient.java
-/home/jpareis/Desktop/SD/sd2122-tp-api/src/tp1/clients/GetUserClient.java
-/home/jpareis/Desktop/SD/sd2122-tp-api/src/tp1/clients/UpdateUserClient.java
-/home/jpareis/Desktop/SD/sd2122-tp-api/src/tp1/server/RESTUsersServer.java
-/home/jpareis/Desktop/SD/sd2122-tp-api/src/tp1/api/service/soap/SoapUsers.java
-/home/jpareis/Desktop/SD/sd2122-tp-api/src/tp1/clients/CreateUserClient.java
-/home/jpareis/Desktop/SD/sd2122-tp-api/src/tp1/clients/SearchUserClient.java
-/home/jpareis/Desktop/SD/sd2122-tp-api/src/tp1/server/resources/FilesResource.java
-/home/jpareis/Desktop/SD/sd2122-tp-api/src/tp1/api/service/soap/DirectoryException.java
-/home/jpareis/Desktop/SD/sd2122-tp-api/src/tp1/server/util/CustomLoggingFilter.java
-/home/jpareis/Desktop/SD/sd2122-tp-api/src/tp1/clients/RestUsersClient.java
-/home/jpareis/Desktop/SD/sd2122-tp-api/src/tp1/api/service/soap/UsersException.java
-/home/jpareis/Desktop/SD/sd2122-tp-api/src/tp1/api/service/util/Files.java
-/home/jpareis/Desktop/SD/sd2122-tp-api/src/tp1/api/User.java
-/home/jpareis/Desktop/SD/sd2122-tp-api/src/tp1/api/service/soap/FilesException.java
-/home/jpareis/Desktop/SD/sd2122-tp-api/src/tp1/api/service/rest/RestUsers.java
-/home/jpareis/Desktop/SD/sd2122-tp-api/src/tp1/server/util/GenericExceptionMapper.java
-/home/jpareis/Desktop/SD/sd2122-tp-api/src/tp1/api/service/rest/RestDirectory.java
-/home/jpareis/Desktop/SD/sd2122-tp-api/src/tp1/server/resources/UsersResource.java
-/home/jpareis/Desktop/SD/sd2122-tp-api/src/tp1/api/service/util/Result.java
-/home/jpareis/Desktop/SD/sd2122-tp-api/src/tp1/clients/DeleteUserClient.java
-/home/jpareis/Desktop/SD/sd2122-tp-api/src/tp1/api/service/soap/SoapDirectory.java
-/home/jpareis/Desktop/SD/sd2122-tp-api/src/tp1/api/service/rest/RestFiles.java
-/home/jpareis/Desktop/SD/sd2122-tp-api/src/tp1/server/RESTFilesServer.java
-/home/jpareis/Desktop/SD/sd2122-tp-api/src/tp1/Discovery.java
-/home/jpareis/Desktop/SD/sd2122-tp-api/src/tp1/api/FileInfo.java
-/home/jpareis/Desktop/SD/sd2122-tp-api/src/tp1/api/service/util/Directory.java
-/home/jpareis/Desktop/SD/sd2122-tp-api/src/tp1/api/service/util/Users.java
-/home/jpareis/Desktop/SD/sd2122-tp-api/src/tp1/api/service/soap/SoapFiles.java
+/home/jpareis/Desktop/SD/Projeto 1/src/tp1/clients/UpdateUserClient.java
+/home/jpareis/Desktop/SD/Projeto 1/src/tp1/server/RESTFilesServer.java
+/home/jpareis/Desktop/SD/Projeto 1/src/tp1/server/RESTDirServer.java
+/home/jpareis/Desktop/SD/Projeto 1/src/tp1/api/FileInfo.java
+/home/jpareis/Desktop/SD/Projeto 1/src/tp1/api/service/util/Directory.java
+/home/jpareis/Desktop/SD/Projeto 1/src/tp1/clients/CreateUserClient.java
+/home/jpareis/Desktop/SD/Projeto 1/src/tp1/api/service/util/Result.java
+/home/jpareis/Desktop/SD/Projeto 1/src/tp1/api/service/util/Users.java
+/home/jpareis/Desktop/SD/Projeto 1/src/tp1/api/service/soap/SoapUsers.java
+/home/jpareis/Desktop/SD/Projeto 1/src/tp1/api/service/util/Files.java
+/home/jpareis/Desktop/SD/Projeto 1/src/tp1/api/service/soap/SoapDirectory.java
+/home/jpareis/Desktop/SD/Projeto 1/src/tp1/clients/RestUsersClient.java
+/home/jpareis/Desktop/SD/Projeto 1/src/tp1/clients/GetUserClient.java
+/home/jpareis/Desktop/SD/Projeto 1/src/tp1/clients/SearchUserClient.java
+/home/jpareis/Desktop/SD/Projeto 1/src/tp1/server/util/CustomLoggingFilter.java
+/home/jpareis/Desktop/SD/Projeto 1/src/tp1/server/resources/UsersResource.java
+/home/jpareis/Desktop/SD/Projeto 1/src/tp1/api/service/soap/FilesException.java
+/home/jpareis/Desktop/SD/Projeto 1/src/tp1/api/service/soap/UsersException.java
+/home/jpareis/Desktop/SD/Projeto 1/src/tp1/api/service/soap/SoapFiles.java
+/home/jpareis/Desktop/SD/Projeto 1/src/tp1/clients/DeleteUserClient.java
+/home/jpareis/Desktop/SD/Projeto 1/src/tp1/server/RESTUsersServer.java
+/home/jpareis/Desktop/SD/Projeto 1/src/tp1/server/util/GenericExceptionMapper.java
+/home/jpareis/Desktop/SD/Projeto 1/src/tp1/Discovery.java
+/home/jpareis/Desktop/SD/Projeto 1/src/tp1/server/resources/FilesResource.java
+/home/jpareis/Desktop/SD/Projeto 1/src/tp1/api/service/rest/RestDirectory.java
+/home/jpareis/Desktop/SD/Projeto 1/src/tp1/server/resources/DirResource.java
+/home/jpareis/Desktop/SD/Projeto 1/src/tp1/api/service/rest/RestFiles.java
+/home/jpareis/Desktop/SD/Projeto 1/src/tp1/clients/RestClient.java
+/home/jpareis/Desktop/SD/Projeto 1/src/tp1/api/User.java
+/home/jpareis/Desktop/SD/Projeto 1/src/tp1/api/service/soap/DirectoryException.java
+/home/jpareis/Desktop/SD/Projeto 1/src/tp1/api/service/rest/RestUsers.java
