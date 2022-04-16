@@ -78,15 +78,15 @@ public class DirResource extends RestClient implements RestDirectory{
     public void shareFile(String filename, String userId, String userIdShare, String password) {
 
         //Check if userIdShare exists
-        reTry( () -> checkUser(userIdShare, ""));
+        reTry( () -> clt_checkUser(userIdShare, ""));
         
         
         //Check if filename exists
-        reTry( () -> checkFile(filename));
+        reTry( () -> clt_checkFile(filename));
         
 
         //Check if the userID exists AND if the password if correct
-        reTry( () -> checkUser(userId, password));
+        reTry( () -> clt_checkUser(userId, password));
         
         //If everything is correct then add to shared files
         if(userToFilesMapping.get(userId) == null){
@@ -104,17 +104,17 @@ public class DirResource extends RestClient implements RestDirectory{
     public void unshareFile(String filename, String userId, String userIdShare, String password) {
 
         //Check if userIdShare exists
-        reTry( () -> checkUser(userIdShare, ""));
+        reTry( () -> clt_checkUser(userIdShare, ""));
         
         
         //Check if filename exists
-        reTry( () -> checkFile(filename));
+        reTry( () -> clt_checkFile(filename));
         
 
         //Check if the userID exists AND if the password if correct
-        reTry( () -> checkUser(userId, password));
+        reTry( () -> clt_checkUser(userId, password));
 
-        //If everything is correct then add to shared files
+        //If everything is correct then remove from shared files
        if(userToAccessedFilesMapping.get(userIdShare) != null && !userToFilesMapping.get(userIdShare).contains(String.format("%s/%s", userId, filename))){
            userToAccessedFilesMapping.get(userIdShare).remove(String.format("%s/%s", userId, filename));
         }
@@ -127,11 +127,12 @@ public class DirResource extends RestClient implements RestDirectory{
     public byte[] getFile(String filename, String userId, String accUserId, String password) {
         URI[] userServiceURIS = discoverySystem.knownUrisOf(RESTUsersServer.SERVICE);
         URI[] fileServiceURIS = discoverySystem.knownUrisOf(RESTFilesServer.SERVICE);
+
         //Check if userIdShare exists
-        reTry( () -> checkUser(accUserId, ""));
+        reTry( () -> clt_checkUser(accUserId, ""));
 
         //Check if the userID exists AND if the password if correct
-        reTry( () -> checkUser(userId, password));
+        reTry( () -> clt_checkUser(userId, password));
 
         //Redirect request to File Server 
         WebTarget target = client.target(userServiceURIS[0]).path(RestUsers.PATH);
@@ -150,8 +151,9 @@ public class DirResource extends RestClient implements RestDirectory{
 
     /*Auxiliary methods*/
 		
-    private User checkUser(String userId, String password){
+    private User clt_checkUser(String userId, String password){
         URI[] userServiceURIS = discoverySystem.knownUrisOf(RESTUsersServer.SERVICE);
+
         WebTarget target = client.target(userServiceURIS[0]).path(RestUsers.PATH);
         Response r = target.path( userId)
 				.queryParam(RestUsers.PASSWORD, password).request()
@@ -167,7 +169,7 @@ public class DirResource extends RestClient implements RestDirectory{
         return null;
     }
 
-    private File checkFile(String filename){
+    private File clt_checkFile(String filename){
         URI[] fileServiceURIS = discoverySystem.knownUrisOf(RESTFilesServer.SERVICE);
         WebTarget target = client.target(fileServiceURIS[0]).path(RestFiles.PATH);
 
