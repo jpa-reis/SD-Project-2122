@@ -1,6 +1,7 @@
 /home/jpareis/Desktop/SD/Projeto 1/src/tp1/clients/UpdateUserClient.java
 /home/jpareis/Desktop/SD/Projeto 1/src/tp1/server/RESTFilesServer.java
 /home/jpareis/Desktop/SD/Projeto 1/src/tp1/server/RESTDirServer.java
+/home/jpareis/Desktop/SD/Projeto 1/src/tp1/server/resources/RestClient.java
 /home/jpareis/Desktop/SD/Projeto 1/src/tp1/api/FileInfo.java
 /home/jpareis/Desktop/SD/Projeto 1/src/tp1/api/service/util/Directory.java
 /home/jpareis/Desktop/SD/Projeto 1/src/tp1/clients/CreateUserClient.java
@@ -25,7 +26,6 @@
 /home/jpareis/Desktop/SD/Projeto 1/src/tp1/api/service/rest/RestDirectory.java
 /home/jpareis/Desktop/SD/Projeto 1/src/tp1/server/resources/DirResource.java
 /home/jpareis/Desktop/SD/Projeto 1/src/tp1/api/service/rest/RestFiles.java
-/home/jpareis/Desktop/SD/Projeto 1/src/tp1/clients/RestClient.java
 /home/jpareis/Desktop/SD/Projeto 1/src/tp1/api/User.java
 /home/jpareis/Desktop/SD/Projeto 1/src/tp1/api/service/soap/DirectoryException.java
 /home/jpareis/Desktop/SD/Projeto 1/src/tp1/api/service/rest/RestUsers.java

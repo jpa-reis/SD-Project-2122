@@ -12,6 +12,7 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 import tp1.api.User;
 import tp1.api.service.rest.RestUsers;
+import tp1.server.resources.RestClient;
 
 public class RestUsersClient extends RestClient implements RestUsers {
 
