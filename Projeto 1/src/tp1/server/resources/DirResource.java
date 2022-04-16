@@ -62,6 +62,9 @@ public class DirResource extends RestClient implements RestDirectory{
     @Override
     public FileInfo writeFile(String filename, byte[] data, String userId, String password) {
         Log.info("writeFile : " + filename);
+	    
+	URI[] fileServiceURIS = discoverySystem.knownUrisOf(RESTFilesServer.SERVICE);
+        WebTarget target = client.target(fileServiceURIS[0]).path(RestFiles.PATH);
                 
         //Verify userId and password
         reTry( () -> clt_checkUser(userId, password));
