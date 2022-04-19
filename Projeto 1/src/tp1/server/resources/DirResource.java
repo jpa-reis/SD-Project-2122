@@ -6,12 +6,14 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
 import jakarta.inject.Singleton;
+import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -29,18 +31,15 @@ import jakarta.ws.rs.WebApplicationException;
 @Singleton
 public class DirResource extends RestClient implements RestDirectory{
 
-    //Maps every user that has files to their files
-	private final Map<String, ArrayList<String>> userToFilesMapping = new HashMap<>();
-
-    //Maps every user that has shared files to the files they have access to
-    private final Map<String, ArrayList<String>> userToAccessedFilesMapping = new HashMap<>();
+    //Mapping of files to their owner and the people with access to the file
+    //Pre-Condition: The key is a String concatenated as "userId/filename"
+	private final Map<String, FileInfo> filesInfo = new HashMap<String, FileInfo>();
 
     /*Discovery system variables and constants*/
     private final Discovery discoverySystem;
     private static final String SERVICE = "directory";
     private static final String SERVER_URI_FMT = "http://%s:%s/rest";
     public static final int PORT = 8080;
-    
     /*----------------------------------------*/
  
     
@@ -58,44 +57,28 @@ public class DirResource extends RestClient implements RestDirectory{
    
 	}
 
-    //Palma
     @Override
     public FileInfo writeFile(String filename, byte[] data, String userId, String password) {
         Log.info("writeFile : " + filename);
-	    
-	URI[] fileServiceURIS = discoverySystem.knownUrisOf(RESTFilesServer.SERVICE);
-        WebTarget target = client.target(fileServiceURIS[0]).path(RestFiles.PATH);
-                
+        
         //Verify userId and password
         reTry( () -> clt_checkUser(userId, password));
 
-        FileInfo file = new FileInfo(userId, filename, target.path(filename).getUri(), fileSharedWith(filename)));
-            
-        Response r = target.path(filename))
-                    .accept(MediaType.APPLICATION_JSON)
-                    .post(Entity.entity(file ,MediaType.APPLICATION_JSON));
+        //Try to add a file to the server
+        FileInfo fileInfo = reTry( () -> clt_writeFile(userId, filename, data));
+        String fileId = String.format("%s/%s", userId, filename);
 
-        if(userToFilesMapping.get(userId).contains(String.format("%s/%s", userId, filename))){
-            int index;
-            for(int i = 0; i < userToFilesMapping.get(userId).size(); i++)
-                if(userToFilesMapping.get(userId).get(i).equals(String.format("%s/%s", userId, filename)))
-                    index = i;
-
-            usertoFileMapping.get(userId).set(index, String.format("%s/%s", userId, filename));
-        }else if(!userToFilesMapping.containsKey(userId) ){
-            ArrayList newList = new ArrayList<String>();
-            userToFilesMapping.put(userId, newList);
-            userToFilesMapping.get(userId).add(String.format("%s/%s", userId, filename));
-        }else{
-            userToFilesMapping.get(userId).add(String.format("%s/%s", userId, filename));
+        if(!filesInfo.containsKey(fileId)){
+            filesInfo.put(fileId, fileInfo);
+        }
+        else{
+            filesInfo.replace(fileId, fileInfo);
         }
 
-        return file;
+        return fileInfo;
     }
     
 
-
-    //Palma
     @Override
     public void deleteFile(String filename, String userId, String password) {
        Log.info("deleteFile : " + filename);
@@ -106,18 +89,8 @@ public class DirResource extends RestClient implements RestDirectory{
         //Verify the filename
         reTry( () -> clt_checkFile(filename));
 
-        
-        if(userToFilesMapping.get(userId).contains(String.format("%s/%s", userId, filename))) {
-            int index;
-            for(int i = 0; i < userToFilesMapping.get(userId).size(); i++)
-                if(userToFilesMapping.get(userId).get(i).equals(String.format("%s/%s", userId, filename)))
-                    index = i;
-
-			userToFilesMapping.get(userId).remove(i);
-		}else{
-            Log.info("Filename does not exist in the user files.");
-			throw new WebApplicationException(Status.NOT_FOUND);
-        } 
+        String fileId = String.format("%s/%s", userId, filename);
+	    filesInfo.remove(fileId);
     }
 
     @Override
@@ -135,12 +108,8 @@ public class DirResource extends RestClient implements RestDirectory{
         reTry( () -> clt_checkUser(userId, password));
         
         //If everything is correct then add to shared files
-        if(userToFilesMapping.get(userId) == null){
-            userToAccessedFilesMapping.put(userIdShare, new ArrayList<String>(Arrays.asList(String.format("%s/%s", userId, filename))));
-        }
-        else if(!userToFilesMapping.get(userIdShare).contains(String.format("%s/%s", userId, filename))){
-           userToAccessedFilesMapping.get(userIdShare).add(String.format("%s/%s", userId, filename));
-        }
+        String fileId = String.format("%s/%s", userId, filename);
+        filesInfo.get(fileId).getSharedWith().add(userIdShare);
         
         
     }
@@ -160,18 +129,13 @@ public class DirResource extends RestClient implements RestDirectory{
         reTry( () -> clt_checkUser(userId, password));
 
         //If everything is correct then remove from shared files
-       if(userToAccessedFilesMapping.get(userIdShare) != null && !userToFilesMapping.get(userIdShare).contains(String.format("%s/%s", userId, filename))){
-           userToAccessedFilesMapping.get(userIdShare).remove(String.format("%s/%s", userId, filename));
-        }
+        String fileId = String.format("%s/%s", userId, filename);
+        filesInfo.get(fileId).getSharedWith().remove(userIdShare);
         
     }
 
-
-    //Reis
     @Override
     public byte[] getFile(String filename, String userId, String accUserId, String password) {
-        URI[] userServiceURIS = discoverySystem.knownUrisOf(RESTUsersServer.SERVICE);
-        URI[] fileServiceURIS = discoverySystem.knownUrisOf(RESTFilesServer.SERVICE);
 
         //Check if userIdShare exists
         reTry( () -> clt_checkUser(accUserId, ""));
@@ -179,27 +143,24 @@ public class DirResource extends RestClient implements RestDirectory{
         //Check if the userID exists AND if the password if correct
         reTry( () -> clt_checkUser(userId, password));
 
-        //Redirect request to File Server 
-        WebTarget target = client.target(userServiceURIS[0]).path(RestUsers.PATH);
-        target = client.target(fileServiceURIS[0]).path(RestFiles.PATH);
-
-        throw new WebApplicationException(Response.temporaryRedirect(target.path(filename).getUri()).build());
+        //Redirect request to File Server
+        //TODO Verify if accUserId has access to the file?
+        String fileId = String.format("/%s/%s", userId, filename);
+        throw new WebApplicationException(Response.temporaryRedirect(URI.create(filesInfo.get(fileId).getFileURL())).build());
     }
 
-    //Palma
     @Override
     public List<FileInfo> lsFile(String userId, String password) {
-        URI[] fileServiceURIS = discoverySystem.knownUrisOf(RESTFilesServer.SERVICE);
+        /*URI[] fileServiceURIS = discoverySystem.knownUrisOf(RESTFilesServer.SERVICE);
         WebTarget target = client.target(fileServiceURIS[0]).path(RestFiles.PATH);
 
         //Verify userId and password
-        reTry( () -> clt_checkUser(userId, password));
+        reTry( () -> clt_checkUser(userId, password));d
 
         //Files that the user own
         List<String> ownerList = userToFilesMapping.get(userId);
         //Files that the user has access
         List<String> sharedList = userToAccessedFilesMapping.get(userId);
-        List<FileInfo> filesList = new ArrayList<>();
 
         for(int i = 0; i < ownerList.size(); i++){
             String[] userIdFile = ownerList.get(i).split("/");
@@ -213,29 +174,19 @@ public class DirResource extends RestClient implements RestDirectory{
             filesList.add(file);
         }
 
-        return filesList;
+        return filesList;*/
+        return null;
     }
     
 
     /*Auxiliary methods*/
-
-
-    private Set<String> fileSharedWith(String filename){
-
-        Set<String> sharedWith = new HashSet<String>(); 
-
-        for (Map.Entry<String, ArrayList<String>> entry : userToAccessedFilesMapping.entrySet()){
-            List<String> list = entry.getValue();
-            for(int i = 0; i < list.size(); i++)
-                if(list.get(i).equals(filename))
-                    sharedWith.add(entry.getKey());
-        }
-
-        return sharedWith;
-    }
 		
     private User clt_checkUser(String userId, String password){
         URI[] userServiceURIS = discoverySystem.knownUrisOf(RESTUsersServer.SERVICE);
+        while(userServiceURIS.length == 0){
+            userServiceURIS = discoverySystem.knownUrisOf(RESTUsersServer.SERVICE);
+        }
+        
 
         WebTarget target = client.target(userServiceURIS[0]).path(RestUsers.PATH);
         Response r = target.path( userId)
@@ -265,6 +216,25 @@ public class DirResource extends RestClient implements RestDirectory{
             throw new WebApplicationException(Status.NOT_FOUND);
         }
         return null;
+    }
+
+    private FileInfo clt_writeFile(String userId, String filename, byte[] data){
+
+        URI[] fileServiceURIS = discoverySystem.knownUrisOf(RESTFilesServer.SERVICE);
+        while(fileServiceURIS.length == 0){
+            fileServiceURIS = discoverySystem.knownUrisOf(RESTFilesServer.SERVICE);
+        }
+
+        String fileId = String.format("/%s/%s", userId, filename);
+        WebTarget target = client.target(fileServiceURIS[0]).path(RestFiles.PATH).path(fileId);
+        Response r = target
+                    .request()
+                    .accept(MediaType.APPLICATION_JSON)
+                    .post(Entity.entity(data, MediaType.APPLICATION_JSON));
+
+        FileInfo fileInfo = new FileInfo(userId, filename, target.getUri().toString(), new HashSet<String>());
+        
+        return fileInfo;
     }
 	
 

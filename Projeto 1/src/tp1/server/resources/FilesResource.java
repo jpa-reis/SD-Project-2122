@@ -30,10 +30,15 @@ public class FilesResource implements RestFiles{
 		}
 		
 		//Check if fileId exists, overwrites the content
-		if(files.containsKey(fileId))
+		if(files.containsKey(fileId)){
+			Log.info("yayyy");
 			files.replace(fileId, data);
-		else	//Add the file to the map of files
+		}
+		else{
+			//Add the file to the map of files
+			Log.info("nooo");
 			files.put(fileId, data);
+		}	
 			
 	}
 
@@ -59,12 +64,12 @@ public class FilesResource implements RestFiles{
 	@Override
 	public byte[] getFile(String fileId, String token) {
 		Log.info("Getting file: " + fileId);
-	
+		Log.info("AAAA file: " + fileId);
+
 		if(fileId == null){
 			Log.info("fileId null.");
 			throw new WebApplicationException(Status.BAD_REQUEST);
 		}
-
 		if(files.containsKey(fileId))
 			return files.get(fileId);
 		else{
