@@ -145,6 +145,4 @@ public interface RestDirectory {
 	List<FileInfo> lsFile(@PathParam("userId") String userId, 
 			@QueryParam("password") String password);
 
-
-
 }
