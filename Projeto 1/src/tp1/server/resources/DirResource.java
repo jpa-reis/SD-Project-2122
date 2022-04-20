@@ -35,7 +35,6 @@ public class DirResource extends RestClient implements RestDirectory{
     //Pre-Condition: The key is a String concatenated as "userId/filename"
 	
     private final Map<String, HashMap<String, FileInfo>> filesInfo = new HashMap<String, HashMap<String,FileInfo>>();
-    private final HashMap<String, FileInfo> filesInfo2 = new HashMap<String,FileInfo>();
     /*Discovery system variables and constants*/
     private final Discovery discoverySystem;
     private static final String SERVICE = "directory";
@@ -73,13 +72,16 @@ public class DirResource extends RestClient implements RestDirectory{
 
         //Try to add a file to the server
         FileInfo fileInfo = reTry( () -> clt_writeFile(userId, filename, data));
-        String fileId = String.format("%s/%s", userId, filename);
 
-        if(!filesInfo.containsKey(fileId)){
-            filesInfo.put(userId, filesInfo2.put(fileId, fileInfo));
+        if(!filesInfo.containsKey(userId)){
+            filesInfo.put(userId, new HashMap<String, FileInfo>());
+            filesInfo.get(userId).put(filename, fileInfo);
+        }
+        else if(!filesInfo.get(userId).containsKey(filename)){
+            filesInfo.get(userId).put(filename, fileInfo);
         }
         else{
-            filesInfo.get(userId).replace(fileId, fileInfo);
+            filesInfo.get(userId).replace(filename, fileInfo);
         }
 
         return fileInfo;
@@ -99,13 +101,15 @@ public class DirResource extends RestClient implements RestDirectory{
             throw new WebApplicationException(Status.FORBIDDEN);
         }
         
-        String fileId = String.format("%s/%s", userId, filename);
+        if(!filesInfo.containsKey(userId)){
+            throw new WebApplicationException(Status.NOT_FOUND);
+        }
 
-        if(!filesInfo.get(userId).containsKey(fileId)){
+        if(!filesInfo.get(userId).containsKey(filename)){
             throw new WebApplicationException(Status.NOT_FOUND);
         }
        
-	    filesInfo.get(userId).remove(fileId);
+	    filesInfo.get(userId).remove(filename);
     }
 
     @Override
@@ -118,9 +122,8 @@ public class DirResource extends RestClient implements RestDirectory{
         }
         
         //Check if filename exists
-        String fileId = String.format("%s/%s", userId, filename);
 
-        if(!filesInfo.get(userId).containsKey(fileId)){
+        if(!filesInfo.get(userId).containsKey(filename)){
             throw new WebApplicationException(Status.NOT_FOUND);
         }
 
@@ -134,7 +137,7 @@ public class DirResource extends RestClient implements RestDirectory{
         }
         
         //If everything is correct then add to shared files
-        filesInfo.get(userId).get(fileId).getSharedWith().add(userIdShare);
+        filesInfo.get(userId).get(filename).getSharedWith().add(userIdShare);
         
         
     }
@@ -149,9 +152,8 @@ public class DirResource extends RestClient implements RestDirectory{
         }
         
         //Check if filename exists
-        String fileId = String.format("%s/%s", userId, filename);
 
-        if(!filesInfo.get(userId).containsKey(fileId)){
+        if(!filesInfo.get(userId).containsKey(filename)){
             throw new WebApplicationException(Status.NOT_FOUND);
         }
 
@@ -165,11 +167,11 @@ public class DirResource extends RestClient implements RestDirectory{
         }
         //If everything is correct then remove from shared files
 
-        if(!filesInfo.get(userId).get(fileId).getSharedWith().contains(userIdShare)){
+        if(!filesInfo.get(userId).get(filename).getSharedWith().contains(userIdShare)){
             throw new WebApplicationException(Status.NOT_FOUND);
         }
 
-        filesInfo.get(userId).get(fileId).getSharedWith().remove(userIdShare);
+        filesInfo.get(userId).get(filename).getSharedWith().remove(userIdShare);
         
     }
 
@@ -192,17 +194,16 @@ public class DirResource extends RestClient implements RestDirectory{
         }
 
         //Redirect request to File Server
-        String fileId = String.format("%s/%s", userId, filename);
-        if(!filesInfo.get(userId).containsKey(fileId)){
+        if(!filesInfo.get(userId).containsKey(filename)){
             throw new WebApplicationException(Status.NOT_FOUND);
         }
         
        
-       if(!filesInfo.get(userId).get(fileId).getSharedWith().contains(accUserId) && !accUserId.equals(userId)){
+       if(!filesInfo.get(userId).get(filename).getSharedWith().contains(accUserId) && !accUserId.equals(userId)){
             throw new WebApplicationException(Status.FORBIDDEN);
         }    
         
-        throw new WebApplicationException(Response.temporaryRedirect(URI.create(filesInfo.get(fileId).getFileURL())).build());      
+        throw new WebApplicationException(Response.temporaryRedirect(URI.create(filesInfo.get(userId).get(filename).getFileURL())).build());      
     }
 
     @Override
@@ -219,11 +220,16 @@ public class DirResource extends RestClient implements RestDirectory{
         
         List<FileInfo> filesList = new ArrayList<FileInfo>();
 
-        for(Map.Entry<String, FileInfo> entry : filesInfo2.entrySet()){
-            if(filesInfo2.get(entry.getKey()).getSharedWith().contains(userId) ||
-               entry.getKey().split("/")[0].equals(userId))
-                filesList.add(entry.getValue());
-        }
+        for(Map.Entry<String, HashMap<String, FileInfo>> entry : filesInfo.entrySet()){
+            for(Map.Entry<String, FileInfo> entry2: filesInfo.get(entry.getKey()).entrySet()){
+                if(entry.getKey().equals(userId) || entry2.getValue().getSharedWith().contains(userId)){
+                    filesList.add(entry2.getValue());
+                }
+                    
+            }
+        }       
+                
+        
 
         return filesList;
     }
