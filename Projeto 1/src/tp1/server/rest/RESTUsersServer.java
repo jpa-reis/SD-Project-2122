@@ -1,4 +1,4 @@
-package tp1.server;
+package tp1.server.rest;
 
 import java.net.InetAddress;
 import java.net.URI;
@@ -8,10 +8,10 @@ import org.glassfish.jersey.jdkhttp.JdkHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
 
 import tp1.Discovery;
-import tp1.server.resources.DirResource;
+import tp1.server.resources.UsersResource;
 
 
-public class RESTDirServer {
+public class RESTUsersServer {
 
 	private static Logger Log = Logger.getLogger(RESTUsersServer.class.getName());
 
@@ -21,14 +21,14 @@ public class RESTDirServer {
 	}
 	
 	public static final int PORT = 8080;
-	public static final String SERVICE = "directory";
+	public static final String SERVICE = "users";
 	private static final String SERVER_URI_FMT = "http://%s:%s/rest";
 
 	
 	public static void main(String[] args) {
 		try {
 		ResourceConfig config = new ResourceConfig();
-		config.register(DirResource.class);
+		config.register(UsersResource.class);
 
 		
 		String ip = InetAddress.getLocalHost().getHostAddress();

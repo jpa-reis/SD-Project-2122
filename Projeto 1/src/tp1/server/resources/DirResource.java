@@ -20,8 +20,8 @@ import tp1.api.FileInfo;
 import tp1.api.service.rest.RestDirectory;
 import tp1.api.service.rest.RestFiles;
 import tp1.api.service.rest.RestUsers;
-import tp1.server.RESTFilesServer;
-import tp1.server.RESTUsersServer;
+import tp1.server.rest.RESTFilesServer;
+import tp1.server.rest.RESTUsersServer;
 import jakarta.ws.rs.WebApplicationException;
 
 @Singleton

@@ -20,11 +20,11 @@ public class RestClient {
 	protected static final int RETRY_SLEEP = 3000;
 	protected static final int MAX_RETRIES = 10;
 
-	final URI serverURI;
+	protected final URI serverURI;
 	protected final Client client;
 	final ClientConfig config;
 
-	protected RestClient(URI serverURI) { //TODO REMOVE PROTECTED
+	protected RestClient(URI serverURI) {
 		this.serverURI = serverURI;
 		this.config = new ClientConfig();
 
