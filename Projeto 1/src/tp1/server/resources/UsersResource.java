@@ -1,5 +1,8 @@
 package tp1.server.resources;
 
+import java.net.InetAddress;
+import java.net.URI;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -9,18 +12,39 @@ import java.util.logging.Logger;
 
 import jakarta.inject.Singleton;
 import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
+import tp1.Discovery;
 import tp1.api.User;
+import tp1.api.service.rest.RestDirectory;
 import tp1.api.service.rest.RestUsers;
+import tp1.server.RESTDirServer;
 
 @Singleton
-public class UsersResource implements RestUsers {
+public class UsersResource extends RestClient implements RestUsers {
 
 	private final Map<String,User> users = new HashMap<>();
 
 	private static Logger Log = Logger.getLogger(UsersResource.class.getName());
 	
-	public UsersResource() {
+	/*Discovery system variables and constants*/
+    private final Discovery discoverySystem;
+    private static final String SERVICE = "users";
+    private static final String SERVER_URI_FMT = "http://%s:%s/rest";
+    public static final int PORT = 8080;
+    /*----------------------------------------*/
+ 
+	
+	public UsersResource() throws UnknownHostException {
+		super(URI.create(String.format(SERVER_URI_FMT, InetAddress.getLocalHost().getHostAddress(), PORT)));
+
+        /*Initialize discovery system code*/
+     
+        discoverySystem = new Discovery(Discovery.DISCOVERY_ADDR, SERVICE, serverURI.toString());
+        discoverySystem.listener(); 
+        discoverySystem.announce(SERVICE, serverURI.toString());
 	}
 		
 	@Override
@@ -63,7 +87,7 @@ public class UsersResource implements RestUsers {
 			Log.info("Password is incorrect.");
 			throw new WebApplicationException( Status.FORBIDDEN );
 		}
-		
+					
 		return user;
 	}
 
@@ -112,6 +136,14 @@ public class UsersResource implements RestUsers {
 			throw new WebApplicationException( Status.FORBIDDEN );
 		}
 
+		URI[] dirServiceURIS = discoverySystem.knownUrisOf(RESTDirServer.SERVICE);
+        while(dirServiceURIS.length == 0){
+            dirServiceURIS = discoverySystem.knownUrisOf(RESTDirServer.SERVICE);
+        }
+		WebTarget target = client.target(dirServiceURIS[0]).path(RestDirectory.PATH).path(userId);
+        Response r = target
+                    .request()
+                    .delete();
 		users.remove(userId);
 		
 		return user;

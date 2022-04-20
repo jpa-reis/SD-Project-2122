@@ -1,15 +1,12 @@
 package tp1.server.resources;
-import java.io.File;
 import java.net.InetAddress;
 import java.net.URI;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.logging.Logger;
 
 import jakarta.inject.Singleton;
@@ -20,7 +17,6 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 import tp1.Discovery;
 import tp1.api.FileInfo;
-import tp1.api.User;
 import tp1.api.service.rest.RestDirectory;
 import tp1.api.service.rest.RestFiles;
 import tp1.api.service.rest.RestUsers;
@@ -108,6 +104,9 @@ public class DirResource extends RestClient implements RestDirectory{
         if(!filesInfo.get(userId).containsKey(filename)){
             throw new WebApplicationException(Status.NOT_FOUND);
         }
+
+        reTry( () -> clt_deleteFile(String.format("%s_%s", userId, filename)));
+
        
 	    filesInfo.get(userId).remove(filename);
     }
@@ -234,6 +233,24 @@ public class DirResource extends RestClient implements RestDirectory{
         return filesList;
     }
     
+    @Override
+	public void deleteUser(String userId) {
+
+        for(Map.Entry<String, FileInfo> entry: filesInfo.get(userId).entrySet()){
+           reTry( () -> clt_deleteFile(String.format("%s_%s", userId, entry.getKey())));
+        }
+
+        if(filesInfo.containsKey(userId))
+            filesInfo.remove(userId);
+		
+        for(Map.Entry<String, HashMap<String, FileInfo>> entry : filesInfo.entrySet()){
+            for(Map.Entry<String, FileInfo> entry2: filesInfo.get(entry.getKey()).entrySet()){
+                if(entry2.getValue().getSharedWith().contains(userId)){
+                    entry2.getValue().getSharedWith().remove(userId);
+                }               
+            }
+        } 
+	}
 
     /*Auxiliary methods*/
 		
@@ -271,6 +288,20 @@ public class DirResource extends RestClient implements RestDirectory{
         
         return fileInfo;
     }
-	
+
+	 private FileInfo clt_deleteFile(String fileId){
+
+        URI[] fileServiceURIS = discoverySystem.knownUrisOf(RESTFilesServer.SERVICE);
+        while(fileServiceURIS.length == 0){
+            fileServiceURIS = discoverySystem.knownUrisOf(RESTFilesServer.SERVICE);
+        }
+
+        WebTarget target = client.target(fileServiceURIS[0]).path(RestFiles.PATH).path(fileId);
+        Response r = target
+                    .request()
+                    .delete();
+                    
+        return null;
+    }
 
 }

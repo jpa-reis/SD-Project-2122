@@ -59,6 +59,18 @@ public interface RestDirectory {
 	void deleteFile(@PathParam("filename") String filename, 
 			@PathParam("userId") String userId, @QueryParam("password") String password);
 
+
+	/**
+	 * Delete all records of a user.
+	 * This method must always be successful.
+	 * 
+	 * @param userId - id of the user
+	 */
+	@DELETE
+	@Path("/{userId}")
+	void deleteUser(@PathParam("userId") String userId);
+	
+
 	/**
 	 * Share the file "userId/filename" with another user. 
 	 * Only the owner (userId) can share the file.
@@ -145,4 +157,6 @@ public interface RestDirectory {
 	List<FileInfo> lsFile(@PathParam("userId") String userId, 
 			@QueryParam("password") String password);
 
+
+	
 }
