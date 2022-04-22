@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
 import jakarta.inject.Singleton;
@@ -27,16 +28,21 @@ import jakarta.ws.rs.WebApplicationException;
 @Singleton
 public class DirResource extends RestClient implements RestDirectory{
 
+
     //Mapping of files to their owner and the people with access to the file
     //Pre-Condition: The key is a String concatenated as "userId/filename"
 	
-    private final Map<String, HashMap<String, FileInfo>> filesInfo = new HashMap<String, HashMap<String,FileInfo>>();
+    private final Map<String, HashMap<String, FileInfo>> filesInfo = new ConcurrentHashMap<String, HashMap<String,FileInfo>>();
+    private final Map<String, Integer> capacityOfFileServer = new ConcurrentHashMap<String, Integer>();
     /*Discovery system variables and constants*/
     private final Discovery discoverySystem;
     private static final String SERVICE = "directory";
     private static final String SERVER_URI_FMT = "http://%s:%s/rest";
     public static final int PORT = 8080;
     /*----------------------------------------*/
+
+    private int numberOfFileServersDiscovered = 0;
+    private String lastServer;
  
     
 	private static Logger Log = Logger.getLogger(FilesResource.class.getName());
@@ -59,6 +65,9 @@ public class DirResource extends RestClient implements RestDirectory{
         
         //Verify userId and password
         Response r = reTry( () -> clt_checkUser(userId, password));
+        if(r == null){
+            throw new WebApplicationException(Status.BAD_REQUEST);
+        }
         if(r.getStatus() == Status.NOT_FOUND.getStatusCode()){
             throw new WebApplicationException(Status.NOT_FOUND);
         }
@@ -66,8 +75,15 @@ public class DirResource extends RestClient implements RestDirectory{
             throw new WebApplicationException(Status.FORBIDDEN);
         }
 
+        lastServer = "null";
         //Try to add a file to the server
-        FileInfo fileInfo = reTry( () -> clt_writeFile(userId, filename, data));
+        FileInfo fileInfo = reTry( () -> clt_writeFile(userId, filename, data, false));
+        if(fileInfo == null && numberOfFileServersDiscovered > 1){
+            fileInfo = reTry( () -> clt_writeFile(userId, filename, data, true));
+        }
+        else if(fileInfo == null && numberOfFileServersDiscovered == 1){
+            throw new WebApplicationException(Status.BAD_REQUEST);
+        }
 
         if(!filesInfo.containsKey(userId)){
             filesInfo.put(userId, new HashMap<String, FileInfo>());
@@ -90,6 +106,9 @@ public class DirResource extends RestClient implements RestDirectory{
         
         //Verify userId and password
         Response r = reTry( () -> clt_checkUser(userId, password));
+        if(r == null){
+            throw new WebApplicationException(Status.BAD_REQUEST);
+        }
         if(r.getStatus() == Status.NOT_FOUND.getStatusCode()){
             throw new WebApplicationException(Status.NOT_FOUND);
         }
@@ -105,7 +124,7 @@ public class DirResource extends RestClient implements RestDirectory{
             throw new WebApplicationException(Status.NOT_FOUND);
         }
 
-        reTry( () -> clt_deleteFile(String.format("%s_%s", userId, filename)));
+        reTry( () -> clt_deleteFile(userId, filename));
 
        
 	    filesInfo.get(userId).remove(filename);
@@ -116,6 +135,9 @@ public class DirResource extends RestClient implements RestDirectory{
 
         //Check if userIdShare exists
         Response r = reTry( () -> clt_checkUser(userIdShare, ""));
+        if(r == null){
+            throw new WebApplicationException(Status.BAD_REQUEST);
+        }
         if(r.getStatus() == Status.NOT_FOUND.getStatusCode()){
             throw new WebApplicationException(Status.NOT_FOUND);
         }
@@ -128,6 +150,9 @@ public class DirResource extends RestClient implements RestDirectory{
 
         //Verify userId and password
         r = reTry( () -> clt_checkUser(userId, password));
+        if(r == null){
+            throw new WebApplicationException(Status.BAD_REQUEST);
+        }
         if(r.getStatus() == Status.NOT_FOUND.getStatusCode()){
             throw new WebApplicationException(Status.NOT_FOUND);
         }
@@ -146,6 +171,9 @@ public class DirResource extends RestClient implements RestDirectory{
 
         //Check if userIdShare exists
         Response r = reTry( () -> clt_checkUser(userIdShare, ""));
+        if(r == null){
+            throw new WebApplicationException(Status.BAD_REQUEST);
+        }
         if(r.getStatus() == Status.NOT_FOUND.getStatusCode()){
             throw new WebApplicationException(Status.NOT_FOUND);
         }
@@ -158,6 +186,9 @@ public class DirResource extends RestClient implements RestDirectory{
 
         //Verify userId and password
         r = reTry( () -> clt_checkUser(userId, password));
+        if(r == null){
+            throw new WebApplicationException(Status.BAD_REQUEST);
+        }
         if(r.getStatus() == Status.NOT_FOUND.getStatusCode()){
             throw new WebApplicationException(Status.NOT_FOUND);
         }
@@ -179,6 +210,9 @@ public class DirResource extends RestClient implements RestDirectory{
 
         //Check if userIdShare exists
         Response r = reTry( () -> clt_checkUser(accUserId, password));
+        if(r == null){
+            throw new WebApplicationException(Status.BAD_REQUEST);
+        }
         if(r.getStatus() == Status.NOT_FOUND.getStatusCode()){
             throw new WebApplicationException(Status.NOT_FOUND);
         }
@@ -188,6 +222,9 @@ public class DirResource extends RestClient implements RestDirectory{
 
         //Check if the userID exists AND if the password if correct
         r = reTry( () -> clt_checkUser(userId, ""));
+        if(r == null){
+            throw new WebApplicationException(Status.BAD_REQUEST);
+        }
         if(r.getStatus() == Status.NOT_FOUND.getStatusCode()){
             throw new WebApplicationException(Status.NOT_FOUND);
         }
@@ -210,6 +247,9 @@ public class DirResource extends RestClient implements RestDirectory{
 
         //Check if userId exists
         Response r = reTry( () -> clt_checkUser(userId, password));
+        if(r == null){
+            throw new WebApplicationException(Status.BAD_REQUEST);
+        }
         if(r.getStatus() == Status.NOT_FOUND.getStatusCode()){
             throw new WebApplicationException(Status.NOT_FOUND);
         }
@@ -237,7 +277,7 @@ public class DirResource extends RestClient implements RestDirectory{
 	public void deleteUser(String userId) {
 
         for(Map.Entry<String, FileInfo> entry: filesInfo.get(userId).entrySet()){
-           reTry( () -> clt_deleteFile(String.format("%s_%s", userId, entry.getKey())));
+           reTry( () -> clt_deleteFile(userId, entry.getKey()));
         }
 
         if(filesInfo.containsKey(userId))
@@ -270,33 +310,64 @@ public class DirResource extends RestClient implements RestDirectory{
     }
 
    
-    private FileInfo clt_writeFile(String userId, String filename, byte[] data){
+    private FileInfo clt_writeFile(String userId, String filename, byte[] data, boolean failed){
 
         URI[] fileServiceURIS = discoverySystem.knownUrisOf(RESTFilesServer.SERVICE);
         while(fileServiceURIS.length == 0){
             fileServiceURIS = discoverySystem.knownUrisOf(RESTFilesServer.SERVICE);
         }
 
+        numberOfFileServersDiscovered = fileServiceURIS.length;
+
+        String minServer = fileServiceURIS[0].toString();
+
+        if(failed && fileServiceURIS.length > 1){
+            minServer = fileServiceURIS[1].toString();
+            int oldCapacity = capacityOfFileServer.get(lastServer)-1;
+            capacityOfFileServer.replace(lastServer, oldCapacity);
+        }
+        
+        if(fileServiceURIS.length > 1){
+            for(int i = 0; i < fileServiceURIS.length; i++){
+                if(!lastServer.equals(fileServiceURIS[i].toString())){
+                    if(!capacityOfFileServer.containsKey(fileServiceURIS[i].toString())){
+                        capacityOfFileServer.put(fileServiceURIS[i].toString(), 0);
+                    }
+                    if(!lastServer.equals(minServer) && capacityOfFileServer.get(minServer) > capacityOfFileServer.get(fileServiceURIS[i].toString())){
+                        minServer = fileServiceURIS[i].toString();
+                    }else if(lastServer.equals(minServer)){
+                        minServer = fileServiceURIS[i].toString();
+                    }
+                }
+            }
+        }else{
+            if(!capacityOfFileServer.containsKey(fileServiceURIS[0].toString())){
+                capacityOfFileServer.put(fileServiceURIS[0].toString(), 0);
+            }
+        }
+
+        lastServer = minServer;
+
         String fileId = String.format("%s_%s", userId, filename);
-        WebTarget target = client.target(fileServiceURIS[0]).path(RestFiles.PATH).path(fileId);
+        
+        WebTarget target = client.target(minServer).path(RestFiles.PATH).path(fileId);
         Response r = target
                     .request()
                     .accept(MediaType.APPLICATION_JSON)
                     .post(Entity.entity(data, MediaType.APPLICATION_OCTET_STREAM));
-
+            
         FileInfo fileInfo = new FileInfo(userId, filename, target.getUri().toString(), new HashSet<String>());
         
+        int newCapacity = capacityOfFileServer.get(minServer)+1;
+        capacityOfFileServer.replace(minServer, newCapacity);
+        
         return fileInfo;
+
     }
 
-	 private FileInfo clt_deleteFile(String fileId){
+	 private FileInfo clt_deleteFile(String userId, String filename){
 
-        URI[] fileServiceURIS = discoverySystem.knownUrisOf(RESTFilesServer.SERVICE);
-        while(fileServiceURIS.length == 0){
-            fileServiceURIS = discoverySystem.knownUrisOf(RESTFilesServer.SERVICE);
-        }
-
-        WebTarget target = client.target(fileServiceURIS[0]).path(RestFiles.PATH).path(fileId);
+        WebTarget target = client.target(filesInfo.get(userId).get(filename).getFileURL());
         Response r = target
                     .request()
                     .delete();

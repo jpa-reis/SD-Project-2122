@@ -14,11 +14,11 @@ import jakarta.ws.rs.client.ClientBuilder;
 public class RestClient {
 	private static Logger Log = Logger.getLogger(RestClient.class.getName());
 
-	protected static final int READ_TIMEOUT = 5000;
-	protected static final int CONNECT_TIMEOUT = 5000;
+	protected static final int READ_TIMEOUT = 10000;
+	protected static final int CONNECT_TIMEOUT = 10000;
 
-	protected static final int RETRY_SLEEP = 3000;
-	protected static final int MAX_RETRIES = 10;
+	protected static final int RETRY_SLEEP = 1000;
+	protected static final int MAX_RETRIES = 3;
 
 	protected final URI serverURI;
 	protected final Client client;
@@ -35,7 +35,8 @@ public class RestClient {
 	}
 
 	protected <T> T reTry(Supplier<T> func) {
-		for (int i = 0; i < MAX_RETRIES; i++)
+		
+		for (int i = 0; i < MAX_RETRIES; i++){
 			try {
 				return func.get();
 			} catch (ProcessingException x) {
@@ -46,6 +47,8 @@ public class RestClient {
 				x.printStackTrace();
 				break;
 			}
+		}
+		
 		return null;
 	}
 

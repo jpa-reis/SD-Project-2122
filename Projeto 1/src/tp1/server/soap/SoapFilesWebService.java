@@ -16,7 +16,6 @@ public class SoapFilesWebService  implements SoapFiles{
 	private static final String NOT_FOUND = "Not found";
 
     private final Map<String, byte[]> files = new HashMap<>();
-
 	static Logger Log = Logger.getLogger(SoapFilesWebService.class.getName());
 
     public SoapFilesWebService(){
@@ -26,7 +25,6 @@ public class SoapFilesWebService  implements SoapFiles{
     @Override
     public byte[] getFile(String fileId, String token) throws FilesException {
         Log.info("Getting file: " + fileId);
-
 		if(fileId == null){
 			Log.info("fileId null.");
 			throw new FilesException(BAD_REQUEST);

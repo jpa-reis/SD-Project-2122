@@ -14,12 +14,8 @@ import java.util.logging.Logger;
 import javax.xml.namespace.QName;
 
 import tp1.api.FileInfo;
-import tp1.api.User;
 import tp1.Discovery;
 import jakarta.jws.WebService;
-import jakarta.ws.rs.WebApplicationException;
-import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.Response.Status;
 import jakarta.xml.ws.Service;
 import tp1.api.service.soap.SoapDirectory;
 import tp1.api.service.soap.SoapFiles;
@@ -38,6 +34,7 @@ public class SoapDirWebService extends RestClient implements SoapDirectory{
     private static final String SERVICE = "directory";
     private static final String SERVER_URI_FMT = "http://%s:%s/soap";
     public static final int PORT = 8080;
+    public final String IP;
 
     private static final String CONFLICT = "Conflict";
 	private static final String BAD_REQUEST = "Bad Request";
@@ -49,6 +46,7 @@ public class SoapDirWebService extends RestClient implements SoapDirectory{
     public SoapDirWebService()throws UnknownHostException {
         super(URI.create(String.format(SERVER_URI_FMT, InetAddress.getLocalHost().getHostAddress(), PORT)));
 
+        IP = InetAddress.getLocalHost().getHostAddress();
         /*Initialize discovery system code*/
      
         discoverySystem = new Discovery(Discovery.DISCOVERY_ADDR, SERVICE, serverURI.toString());
@@ -102,10 +100,11 @@ public class SoapDirWebService extends RestClient implements SoapDirectory{
             if(r.getMessage().equals(NOT_FOUND)){
                 throw new DirectoryException(NOT_FOUND);
             }
-            else if(r.getMessage().equals(FORBIDDEN)){
+            else if(r.getMessage().equals("Wrong password")){
                 throw new DirectoryException(FORBIDDEN);
             }
         }
+        
         
         
         if(!filesInfo.containsKey(userId)){
@@ -282,15 +281,11 @@ public class SoapDirWebService extends RestClient implements SoapDirectory{
 	/*Auxiliary methods*/
 
     private byte[] clt_getFile(String userId, String filename){
-        URI[] fileServiceURIS = discoverySystem.knownUrisOf(SOAPFilesServer.SERVICE_NAME);
-        while(fileServiceURIS.length == 0){
-            fileServiceURIS = discoverySystem.knownUrisOf(SOAPFilesServer.SERVICE_NAME);
-        }
 
         QName qname = new QName(SoapFiles.NAMESPACE, SoapFiles.NAME);		
 		Service service;
         try {
-            service = Service.create( URI.create(filesInfo.get(userId).get(filename).getFileURL()).toURL(), qname);
+            service = Service.create( URI.create(filesInfo.get(userId).get(filename).getFileURL()+ "?wsdl").toURL(), qname);
         } catch (MalformedURLException e1) {
             e1.printStackTrace();
             return null;
@@ -298,13 +293,12 @@ public class SoapDirWebService extends RestClient implements SoapDirectory{
 
 		SoapFiles files = service.getPort(tp1.api.service.soap.SoapFiles.class);
 
-        byte[] data = null;
         try {
-            data = files.getFile(String.format("%s_%s", userId, filename), "");
+            return files.getFile(String.format("%s_%s", userId, filename), "");
         } catch (FilesException e1) {
         }
 
-        return data;
+        return null;
         
     }
 		
@@ -325,7 +319,7 @@ public class SoapDirWebService extends RestClient implements SoapDirectory{
 
 		SoapUsers users = service.getPort(tp1.api.service.soap.SoapUsers.class);
 
-        try {
+       try {
             users.getUser(userId, password);
         } catch (UsersException e1) {
             return e1;
@@ -345,7 +339,7 @@ public class SoapDirWebService extends RestClient implements SoapDirectory{
         QName qname = new QName(SoapFiles.NAMESPACE, SoapFiles.NAME);		
 		Service service;
         try {
-            service = Service.create( URI.create(fileServiceURIS[0]+ "?wsdl").toURL(), qname);
+            service = Service.create( URI.create(fileServiceURIS[0] + "?wsdl").toURL(), qname);
         } catch (MalformedURLException e1) {
             e1.printStackTrace();
             return null;
@@ -353,12 +347,12 @@ public class SoapDirWebService extends RestClient implements SoapDirectory{
 		SoapFiles files = service.getPort(tp1.api.service.soap.SoapFiles.class);
         
         try {
-            files.writeFile(userId, data, "");
+            files.writeFile(String.format("%s_%s", userId, filename), data, "");
         } catch (FilesException e) {
             e.printStackTrace();
         }
         
-        FileInfo fileInfo = new FileInfo(userId, filename, service.getWSDLDocumentLocation().toString(), new HashSet<String>());
+        FileInfo fileInfo = new FileInfo(userId, filename, String.format("%s/%s_%s", fileServiceURIS[0], userId, filename), new HashSet<String>());
         
         return fileInfo;
     }
@@ -370,7 +364,21 @@ public class SoapDirWebService extends RestClient implements SoapDirectory{
             fileServiceURIS = discoverySystem.knownUrisOf(SOAPFilesServer.SERVICE_NAME);
         }
 
-        //TODO
+        QName qname = new QName(SoapFiles.NAMESPACE, SoapFiles.NAME);		
+		Service service;
+        try {
+            service = Service.create( URI.create(fileServiceURIS[0]+ "?wsdl").toURL(), qname);
+        } catch (MalformedURLException e1) {
+            e1.printStackTrace();
+            return null;
+        }		
+		SoapFiles files = service.getPort(tp1.api.service.soap.SoapFiles.class);
+        
+        try {
+            files.deleteFile(fileId, "");
+        } catch (FilesException e) {
+            e.printStackTrace();
+        }
                     
         return null;
     }

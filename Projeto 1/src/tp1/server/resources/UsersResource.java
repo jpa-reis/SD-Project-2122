@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
 import jakarta.inject.Singleton;
@@ -24,7 +25,7 @@ import tp1.server.rest.RESTDirServer;
 @Singleton
 public class UsersResource extends RestClient implements RestUsers {
 
-	private final Map<String,User> users = new HashMap<>();
+	private final Map<String,User> users = new ConcurrentHashMap<>();
 
 	private static Logger Log = Logger.getLogger(UsersResource.class.getName());
 	

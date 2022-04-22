@@ -1,6 +1,7 @@
 package tp1.server.resources;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
 import jakarta.inject.Singleton;
@@ -11,7 +12,7 @@ import tp1.api.service.rest.RestFiles;
 @Singleton
 public class FilesResource implements RestFiles{
 
-	private final Map<String, byte[]> files = new HashMap<>();
+	private final Map<String, byte[]> files = new ConcurrentHashMap<>();
 
 	private static Logger Log = Logger.getLogger(FilesResource.class.getName());
 	

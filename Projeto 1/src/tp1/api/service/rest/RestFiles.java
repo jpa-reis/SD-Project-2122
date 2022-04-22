@@ -70,3 +70,4 @@ public interface RestFiles {
 			@QueryParam("token") @DefaultValue("") String token);
 
 }
+
