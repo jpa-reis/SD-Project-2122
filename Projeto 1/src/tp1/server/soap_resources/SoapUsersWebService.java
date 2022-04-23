@@ -1,4 +1,4 @@
-package tp1.server.soap;
+package tp1.server.soap_resources;
 
 
 import java.net.InetAddress;
@@ -18,14 +18,14 @@ import jakarta.jws.WebService;
 import jakarta.xml.ws.Service;
 import tp1.Discovery;
 import tp1.api.User;
-import tp1.api.service.soap.DirectoryException;
 import tp1.api.service.soap.SoapDirectory;
 import tp1.api.service.soap.SoapUsers;
 import tp1.api.service.soap.UsersException;
-import tp1.server.resources.RestClient;
+import tp1.clients.SoapClient;
+import tp1.server.soap.SOAPDirServer;
 
 @WebService(serviceName=SoapUsers.NAME, targetNamespace=SoapUsers.NAMESPACE, endpointInterface=SoapUsers.INTERFACE)
-public class SoapUsersWebService extends RestClient implements SoapUsers {
+public class SoapUsersWebService extends SoapClient implements SoapUsers {
 
 	private static final String CONFLICT = "Conflict";
 	private static final String BAD_REQUEST = "Bad Request";

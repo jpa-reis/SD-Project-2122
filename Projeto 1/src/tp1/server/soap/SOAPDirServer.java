@@ -5,6 +5,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import jakarta.xml.ws.Endpoint;
+import tp1.server.soap_resources.SoapDirWebService;
 
 public class SOAPDirServer {
     public static final int PORT = 8080;

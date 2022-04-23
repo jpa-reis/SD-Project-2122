@@ -8,7 +8,7 @@ import org.glassfish.jersey.jdkhttp.JdkHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
 
 import tp1.Discovery;
-import tp1.server.resources.FilesResource;
+import tp1.server.rest_resources.FilesResource;
 
 
 public class RESTFilesServer {

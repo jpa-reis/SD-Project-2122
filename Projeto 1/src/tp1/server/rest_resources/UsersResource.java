@@ -1,10 +1,9 @@
-package tp1.server.resources;
+package tp1.server.rest_resources;
 
 import java.net.InetAddress;
 import java.net.URI;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -20,6 +19,7 @@ import tp1.Discovery;
 import tp1.api.User;
 import tp1.api.service.rest.RestDirectory;
 import tp1.api.service.rest.RestUsers;
+import tp1.clients.RestClient;
 import tp1.server.rest.RESTDirServer;
 
 @Singleton

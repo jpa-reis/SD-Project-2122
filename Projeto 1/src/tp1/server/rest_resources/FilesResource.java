@@ -1,4 +1,4 @@
-package tp1.server.resources;
+package tp1.server.rest_resources;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;

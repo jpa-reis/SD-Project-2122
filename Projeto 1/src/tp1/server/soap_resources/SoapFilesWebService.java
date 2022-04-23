@@ -1,4 +1,4 @@
-package tp1.server.soap;
+package tp1.server.soap_resources;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -1,9 +1,8 @@
-package tp1.server.soap;
+package tp1.server.soap_resources;
 
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,12 +21,14 @@ import tp1.api.service.soap.SoapDirectory;
 import tp1.api.service.soap.SoapFiles;
 import tp1.api.service.soap.SoapUsers;
 import tp1.api.service.soap.UsersException;
-import tp1.server.resources.RestClient;
+import tp1.clients.SoapClient;
+import tp1.server.soap.SOAPFilesServer;
+import tp1.server.soap.SOAPUsersServer;
 import tp1.api.service.soap.DirectoryException;
 import tp1.api.service.soap.FilesException;
 
 @WebService(serviceName=SoapDirectory.NAME, targetNamespace=SoapDirectory.NAMESPACE, endpointInterface=SoapDirectory.INTERFACE)
-public class SoapDirWebService extends RestClient implements SoapDirectory{
+public class SoapDirWebService extends SoapClient implements SoapDirectory{
 
     private final Map<String, HashMap<String, FileInfo>> filesInfo = new HashMap<String, HashMap<String,FileInfo>>();
     /*Discovery system variables and constants*/

@@ -1,4 +1,4 @@
-package tp1.server.resources;
+package tp1.server.rest_resources;
 import java.net.InetAddress;
 import java.net.URI;
 import java.net.UnknownHostException;
@@ -22,6 +22,7 @@ import tp1.api.FileInfo;
 import tp1.api.service.rest.RestDirectory;
 import tp1.api.service.rest.RestFiles;
 import tp1.api.service.rest.RestUsers;
+import tp1.clients.RestClient;
 import tp1.server.rest.RESTFilesServer;
 import tp1.server.rest.RESTUsersServer;
 import jakarta.ws.rs.WebApplicationException;
