@@ -1,6 +1,10 @@
 package tp1.server.soap;
 
 
+import java.net.InetAddress;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -8,24 +12,43 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import javax.xml.namespace.QName;
+
 import jakarta.jws.WebService;
+import jakarta.xml.ws.Service;
+import tp1.Discovery;
 import tp1.api.User;
+import tp1.api.service.soap.DirectoryException;
+import tp1.api.service.soap.SoapDirectory;
 import tp1.api.service.soap.SoapUsers;
 import tp1.api.service.soap.UsersException;
+import tp1.server.resources.RestClient;
 
 @WebService(serviceName=SoapUsers.NAME, targetNamespace=SoapUsers.NAMESPACE, endpointInterface=SoapUsers.INTERFACE)
-public class SoapUsersWebService implements SoapUsers {
+public class SoapUsersWebService extends RestClient implements SoapUsers {
 
 	private static final String CONFLICT = "Conflict";
 	private static final String BAD_REQUEST = "Bad Request";
 	private static final String NOT_FOUND = "Not found";
 	private static final String FORBIDDEN = "Wrong password";
 
+	private final Discovery discoverySystem;
+    private static final String SERVICE = "users";
+    private static final String SERVER_URI_FMT = "http://%s:%s/soap";
+    public static final int PORT = 8080;
+
 	static Logger Log = Logger.getLogger(SoapUsersWebService.class.getName());
 
 	final protected Map<String, User> users = new HashMap<>();
 	
-	public SoapUsersWebService() {
+	public SoapUsersWebService() throws UnknownHostException {
+		super(URI.create(String.format(SERVER_URI_FMT, InetAddress.getLocalHost().getHostAddress(), PORT)));
+		/*Initialize discovery system code*/
+     
+        discoverySystem = new Discovery(Discovery.DISCOVERY_ADDR, SERVICE, serverURI.toString());
+        discoverySystem.listener(); 
+        discoverySystem.announce(SERVICE, serverURI.toString());
+	
 	}
 
 	@Override
@@ -111,6 +134,23 @@ public class SoapUsersWebService implements SoapUsers {
 			throw new UsersException(FORBIDDEN);
 		}
 
+		URI[] dirServiceURIS = discoverySystem.knownUrisOf(SOAPDirServer.SERVICE_NAME);
+        while(dirServiceURIS.length == 0){
+        	dirServiceURIS = discoverySystem.knownUrisOf(SOAPDirServer.SERVICE_NAME);
+		}
+
+		QName qname = new QName(SoapDirectory.NAMESPACE, SoapDirectory.NAME);		
+		Service service;
+        try {
+            service = Service.create( URI.create(dirServiceURIS[0]+ "?wsdl").toURL(), qname);
+        } catch (MalformedURLException e1) {
+            e1.printStackTrace();
+            return null;
+        }	
+
+		SoapDirectory directory = service.getPort(tp1.api.service.soap.SoapDirectory.class);
+		directory.deleteUserS(userId);
+		
 		users.remove(userId);
 		
 		return user;

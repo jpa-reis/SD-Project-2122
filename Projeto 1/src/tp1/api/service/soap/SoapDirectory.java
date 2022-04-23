@@ -33,5 +33,5 @@ public interface SoapDirectory {
 	List<FileInfo> lsFile(String userId, String password) throws DirectoryException;
 
 	@WebMethod
-	void deleteUser(String userId) throws DirectoryException;
+	void deleteUserS(String userId);
 }

@@ -5,6 +5,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Set;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -126,7 +127,10 @@ public class DirResource extends RestClient implements RestDirectory{
 
         reTry( () -> clt_deleteFile(userId, filename));
 
-       
+        String server = filesInfo.get(userId).get(filename).getFileURL().split("/files")[0];
+        int oldCapacity = capacityOfFileServer.get(server);
+        capacityOfFileServer.replace(server, oldCapacity - 1);
+
 	    filesInfo.get(userId).remove(filename);
     }
 
@@ -142,12 +146,6 @@ public class DirResource extends RestClient implements RestDirectory{
             throw new WebApplicationException(Status.NOT_FOUND);
         }
         
-        //Check if filename exists
-
-        if(!filesInfo.get(userId).containsKey(filename)){
-            throw new WebApplicationException(Status.NOT_FOUND);
-        }
-
         //Verify userId and password
         r = reTry( () -> clt_checkUser(userId, password));
         if(r == null){
@@ -158,6 +156,11 @@ public class DirResource extends RestClient implements RestDirectory{
         }
         else if(r.getStatus() == Status.FORBIDDEN.getStatusCode()){
             throw new WebApplicationException(Status.FORBIDDEN);
+        }
+        
+        //Check if filename exist
+        if(!filesInfo.get(userId).containsKey(filename)){
+            throw new WebApplicationException(Status.NOT_FOUND);
         }
         
         //If everything is correct then add to shared files
@@ -178,12 +181,7 @@ public class DirResource extends RestClient implements RestDirectory{
             throw new WebApplicationException(Status.NOT_FOUND);
         }
         
-        //Check if filename exists
-
-        if(!filesInfo.get(userId).containsKey(filename)){
-            throw new WebApplicationException(Status.NOT_FOUND);
-        }
-
+        
         //Verify userId and password
         r = reTry( () -> clt_checkUser(userId, password));
         if(r == null){
@@ -195,8 +193,13 @@ public class DirResource extends RestClient implements RestDirectory{
         else if(r.getStatus() == Status.FORBIDDEN.getStatusCode()){
             throw new WebApplicationException(Status.FORBIDDEN);
         }
-        //If everything is correct then remove from shared files
+        
+        //Check if filename exists
+        if(!filesInfo.get(userId).containsKey(filename)){
+            throw new WebApplicationException(Status.NOT_FOUND);
+        }
 
+        //If everything is correct then remove from shared files
         if(!filesInfo.get(userId).get(filename).getSharedWith().contains(userIdShare)){
             throw new WebApplicationException(Status.NOT_FOUND);
         }
@@ -355,8 +358,14 @@ public class DirResource extends RestClient implements RestDirectory{
                     .request()
                     .accept(MediaType.APPLICATION_JSON)
                     .post(Entity.entity(data, MediaType.APPLICATION_OCTET_STREAM));
-            
-        FileInfo fileInfo = new FileInfo(userId, filename, target.getUri().toString(), new HashSet<String>());
+
+        Set<String> sharedWith;
+        if(!filesInfo.containsKey(userId) || !filesInfo.get(userId).containsKey(filename) || filesInfo.get(userId).get(filename).getSharedWith().isEmpty())
+            sharedWith = new HashSet<String>();
+        else
+            sharedWith = filesInfo.get(userId).get(filename).getSharedWith();
+
+        FileInfo fileInfo = new FileInfo(userId, filename, target.getUri().toString(), sharedWith);
         
         int newCapacity = capacityOfFileServer.get(minServer)+1;
         capacityOfFileServer.replace(minServer, newCapacity);

@@ -3,6 +3,7 @@ package tp1.server.soap;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,9 +22,9 @@ import tp1.api.service.soap.SoapDirectory;
 import tp1.api.service.soap.SoapFiles;
 import tp1.api.service.soap.SoapUsers;
 import tp1.api.service.soap.UsersException;
+import tp1.server.resources.RestClient;
 import tp1.api.service.soap.DirectoryException;
 import tp1.api.service.soap.FilesException;
-import tp1.server.resources.RestClient;
 
 @WebService(serviceName=SoapDirectory.NAME, targetNamespace=SoapDirectory.NAMESPACE, endpointInterface=SoapDirectory.INTERFACE)
 public class SoapDirWebService extends RestClient implements SoapDirectory{
@@ -100,7 +101,7 @@ public class SoapDirWebService extends RestClient implements SoapDirectory{
             if(r.getMessage().equals(NOT_FOUND)){
                 throw new DirectoryException(NOT_FOUND);
             }
-            else if(r.getMessage().equals("Wrong password")){
+            else if(r.getMessage().equals(FORBIDDEN)){
                 throw new DirectoryException(FORBIDDEN);
             }
         }
@@ -114,9 +115,10 @@ public class SoapDirWebService extends RestClient implements SoapDirectory{
         if(!filesInfo.get(userId).containsKey(filename)){
             throw new DirectoryException(NOT_FOUND);
         }
-
+        
+        
         reTry( () -> clt_deleteFile(String.format("%s_%s", userId, filename)));
-
+        
        
 	    filesInfo.get(userId).remove(filename);
         
@@ -134,22 +136,23 @@ public class SoapDirWebService extends RestClient implements SoapDirectory{
                 throw new DirectoryException(NOT_FOUND);
             }
         }
-        
-        //Check if filename exists
 
+        //Verify userId and password
+        r = reTry( () -> clt_checkUser(userId, password));
+        if(r != null){
+            if(r.getMessage().equals(NOT_FOUND)){
+                throw new DirectoryException(NOT_FOUND);
+            }
+            else if(r.getMessage().equals(FORBIDDEN)){
+                throw new DirectoryException(FORBIDDEN);
+            }
+        }
+
+        //Check if filename exists
         if(!filesInfo.get(userId).containsKey(filename)){
             throw new DirectoryException(NOT_FOUND);
         }
 
-        //Verify userId and password
-        r = reTry( () -> clt_checkUser(userId, password));
-        if(r.getMessage().equals(NOT_FOUND)){
-            throw new DirectoryException(NOT_FOUND);
-        }
-        else if(r.getMessage().equals(FORBIDDEN)){
-            throw new DirectoryException(FORBIDDEN);
-        }
-        
         //If everything is correct then add to shared files
         filesInfo.get(userId).get(filename).getSharedWith().add(userIdShare);
         
@@ -168,23 +171,24 @@ public class SoapDirWebService extends RestClient implements SoapDirectory{
                 throw new DirectoryException(NOT_FOUND);
             }
         }
+
+        //Verify userId and password
+        r = reTry( () -> clt_checkUser(userId, password));
+        if(r != null){
+            if(r.getMessage().equals(NOT_FOUND)){
+                throw new DirectoryException(NOT_FOUND);
+            }
+            else if(r.getMessage().equals(FORBIDDEN)){
+                throw new DirectoryException(FORBIDDEN);
+            }
+        }
         
         //Check if filename exists
-
         if(!filesInfo.get(userId).containsKey(filename)){
             throw new DirectoryException(NOT_FOUND);
         }
 
-        //Verify userId and password
-        r = reTry( () -> clt_checkUser(userId, password));
-        if(r.getMessage().equals(NOT_FOUND)){
-            throw new DirectoryException(NOT_FOUND);
-        }
-        else if(r.getMessage().equals(FORBIDDEN)){
-            throw new DirectoryException(FORBIDDEN);
-        }
         //If everything is correct then remove from shared files
-
         if(!filesInfo.get(userId).get(filename).getSharedWith().contains(userIdShare)){
             throw new DirectoryException(NOT_FOUND);
         }
@@ -260,7 +264,7 @@ public class SoapDirWebService extends RestClient implements SoapDirectory{
     }
 
     @Override
-	public void deleteUser(String userId) {
+	public void deleteUserS(String userId) {
 
         for(Map.Entry<String, FileInfo> entry: filesInfo.get(userId).entrySet()){
            reTry( () -> clt_deleteFile(String.format("%s_%s", userId, entry.getKey())));

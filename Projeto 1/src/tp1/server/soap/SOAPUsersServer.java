@@ -28,7 +28,7 @@ public class SOAPUsersServer {
 		String ip = InetAddress.getLocalHost().getHostAddress();
 		String serverURI = String.format(SERVER_BASE_URI, ip, PORT);
 
-		Endpoint.publish(serverURI, new SoapUsersWebService());
+		Endpoint.publish(serverURI , new SoapUsersWebService());
 
 		Discovery discovery = new Discovery(Discovery.DISCOVERY_ADDR ,SERVICE_NAME, serverURI);
 		discovery.announce(SERVICE_NAME, serverURI);
