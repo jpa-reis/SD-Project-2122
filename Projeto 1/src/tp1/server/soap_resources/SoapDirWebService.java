@@ -46,11 +46,11 @@ public class SoapDirWebService extends SoapClient implements SoapDirectory{
 	static Logger Log = Logger.getLogger(SoapDirWebService.class.getName());
 
     public SoapDirWebService()throws UnknownHostException {
-        super(URI.create(String.format(SERVER_URI_FMT, InetAddress.getLocalHost().getHostAddress(), PORT)));
+        super();
 
         IP = InetAddress.getLocalHost().getHostAddress();
         /*Initialize discovery system code*/
-     
+        URI serverURI = URI.create(String.format(SERVER_URI_FMT, InetAddress.getLocalHost().getHostAddress(), PORT));
         discoverySystem = new Discovery(Discovery.DISCOVERY_ADDR, SERVICE, serverURI.toString());
         discoverySystem.listener(); 
         discoverySystem.announce(SERVICE, serverURI.toString());
@@ -266,21 +266,21 @@ public class SoapDirWebService extends SoapClient implements SoapDirectory{
 
     @Override
 	public void deleteUserS(String userId) {
-
-        for(Map.Entry<String, FileInfo> entry: filesInfo.get(userId).entrySet()){
-           reTry( () -> clt_deleteFile(String.format("%s_%s", userId, entry.getKey())));
-        }
-
-        if(filesInfo.containsKey(userId))
-            filesInfo.remove(userId);
-		
-        for(Map.Entry<String, HashMap<String, FileInfo>> entry : filesInfo.entrySet()){
-            for(Map.Entry<String, FileInfo> entry2: filesInfo.get(entry.getKey()).entrySet()){
-                if(entry2.getValue().getSharedWith().contains(userId)){
-                    entry2.getValue().getSharedWith().remove(userId);
-                }               
+        if(filesInfo.containsKey(userId)){
+            for(Map.Entry<String, FileInfo> entry: filesInfo.get(userId).entrySet()){
+            reTry( () -> clt_deleteFile(String.format("%s_%s", userId, entry.getKey())));
             }
-        } 
+
+            filesInfo.remove(userId);
+            
+            for(Map.Entry<String, HashMap<String, FileInfo>> entry : filesInfo.entrySet()){
+                for(Map.Entry<String, FileInfo> entry2: filesInfo.get(entry.getKey()).entrySet()){
+                    if(entry2.getValue().getSharedWith().contains(userId)){
+                        entry2.getValue().getSharedWith().remove(userId);
+                    }               
+                }
+            } 
+        }
 	}
 
 	/*Auxiliary methods*/
@@ -324,7 +324,7 @@ public class SoapDirWebService extends SoapClient implements SoapDirectory{
 
 		SoapUsers users = service.getPort(tp1.api.service.soap.SoapUsers.class);
 
-       try {
+        try {
             users.getUser(userId, password);
         } catch (UsersException e1) {
             return e1;

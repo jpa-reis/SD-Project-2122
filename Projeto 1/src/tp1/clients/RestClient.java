@@ -1,6 +1,5 @@
 package tp1.clients;
 
-import java.net.URI;
 import java.util.function.Supplier;
 import java.util.logging.Logger;
 
@@ -12,20 +11,17 @@ import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 
 public class RestClient {
-	private static Logger Log = Logger.getLogger(RestClient.class.getName());
+	protected static Logger Log = Logger.getLogger(RestClient.class.getName());
 
 	protected static final int READ_TIMEOUT = 10000;
 	protected static final int CONNECT_TIMEOUT = 10000;
 
 	protected static final int RETRY_SLEEP = 1000;
 	protected static final int MAX_RETRIES = 3;
-
-	protected final URI serverURI;
 	protected final Client client;
 	final ClientConfig config;
 
-	protected RestClient(URI serverURI) {
-		this.serverURI = serverURI;
+	protected RestClient() {
 		this.config = new ClientConfig();
 
 		config.property(ClientProperties.READ_TIMEOUT, READ_TIMEOUT);

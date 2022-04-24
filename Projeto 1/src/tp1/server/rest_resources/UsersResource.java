@@ -38,10 +38,10 @@ public class UsersResource extends RestClient implements RestUsers {
  
 	
 	public UsersResource() throws UnknownHostException {
-		super(URI.create(String.format(SERVER_URI_FMT, InetAddress.getLocalHost().getHostAddress(), PORT)));
+		super();
 
         /*Initialize discovery system code*/
-     
+		URI serverURI = URI.create(String.format(SERVER_URI_FMT, InetAddress.getLocalHost().getHostAddress(), PORT));
         discoverySystem = new Discovery(Discovery.DISCOVERY_ADDR, SERVICE, serverURI.toString());
         discoverySystem.listener(); 
         discoverySystem.announce(SERVICE, serverURI.toString());
@@ -121,7 +121,7 @@ public class UsersResource extends RestClient implements RestUsers {
 	@Override
 	public User deleteUser(String userId, String password) {
 		Log.info("deleteUser : user = " + userId + "; pwd = " + password);
-		
+
 		User user = users.get(userId);
 		
 		// Check if user exists 

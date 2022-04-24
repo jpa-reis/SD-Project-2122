@@ -5,7 +5,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import jakarta.xml.ws.Endpoint;
-import tp1.server.soap_resources.SoapDirWebService;
+import tp1.Discovery;
+import tp1.server.interoperable.soap_webServices.dirWebService;
 
 public class SOAPDirServer {
     public static final int PORT = 8080;
@@ -26,7 +27,10 @@ public class SOAPDirServer {
 		String ip = InetAddress.getLocalHost().getHostAddress();
 		String serverURI = String.format(SERVER_BASE_URI, ip, PORT);
 
-		Endpoint.publish(serverURI, new SoapDirWebService());
+		Endpoint.publish(serverURI, new dirWebService());
+
+		Discovery discovery = new Discovery(Discovery.DISCOVERY_ADDR ,SERVICE_NAME, serverURI);
+		discovery.announce(SERVICE_NAME, serverURI);
 
 		Log.info(String.format("%s Soap Server ready @ %s\n", SERVICE_NAME, serverURI));
 	}

@@ -1,5 +1,6 @@
 package tp1.api.service.util;
 
+import java.net.URI;
 import java.util.*;
 
 import tp1.api.FileInfo;
@@ -110,4 +111,7 @@ public interface Directory {
 	 *         BAD_REQUEST otherwise.
 	 */
 	Result<List<FileInfo>> lsFile(String userId, String password);
+
+
+	Result<Void> deleteUserS(String userId);
 }

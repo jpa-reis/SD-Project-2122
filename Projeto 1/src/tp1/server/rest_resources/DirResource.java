@@ -50,7 +50,8 @@ public class DirResource extends RestClient implements RestDirectory{
 	private static Logger Log = Logger.getLogger(FilesResource.class.getName());
 
 	public DirResource() throws UnknownHostException {
-        super(URI.create(String.format(SERVER_URI_FMT, InetAddress.getLocalHost().getHostAddress(), PORT)));
+        super();
+        URI serverURI = URI.create(String.format(SERVER_URI_FMT, InetAddress.getLocalHost().getHostAddress(), PORT));
 
         /*Initialize discovery system code*/
      
@@ -279,21 +280,21 @@ public class DirResource extends RestClient implements RestDirectory{
     
     @Override
 	public void deleteUser(String userId) {
-
-        for(Map.Entry<String, FileInfo> entry: filesInfo.get(userId).entrySet()){
-           reTry( () -> clt_deleteFile(userId, entry.getKey()));
-        }
-
-        if(filesInfo.containsKey(userId))
-            filesInfo.remove(userId);
-		
-        for(Map.Entry<String, HashMap<String, FileInfo>> entry : filesInfo.entrySet()){
-            for(Map.Entry<String, FileInfo> entry2: filesInfo.get(entry.getKey()).entrySet()){
-                if(entry2.getValue().getSharedWith().contains(userId)){
-                    entry2.getValue().getSharedWith().remove(userId);
-                }               
+        if(filesInfo.containsKey(userId)){
+            for(Map.Entry<String, FileInfo> entry: filesInfo.get(userId).entrySet()){
+            reTry( () -> clt_deleteFile(userId, entry.getKey()));
             }
-        } 
+  
+            filesInfo.remove(userId);
+            
+            for(Map.Entry<String, HashMap<String, FileInfo>> entry : filesInfo.entrySet()){
+                for(Map.Entry<String, FileInfo> entry2: filesInfo.get(entry.getKey()).entrySet()){
+                    if(entry2.getValue().getSharedWith().contains(userId)){
+                        entry2.getValue().getSharedWith().remove(userId);
+                    }               
+                }
+            } 
+        }
 	}
 
     /*Auxiliary methods*/

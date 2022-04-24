@@ -6,7 +6,7 @@ import java.util.logging.Logger;
 
 import jakarta.xml.ws.Endpoint;
 import tp1.Discovery;
-import tp1.server.soap_resources.SoapFilesWebService;
+import tp1.server.interoperable.soap_webServices.filesWebService;
 
 public class SOAPFilesServer {
     public static final int PORT = 8080;
@@ -27,7 +27,7 @@ public class SOAPFilesServer {
 		String ip = InetAddress.getLocalHost().getHostAddress();
 		String serverURI = String.format(SERVER_BASE_URI, ip, PORT);
 
-		Endpoint.publish(serverURI, new SoapFilesWebService());
+		Endpoint.publish(serverURI, new filesWebService());
 
 		Discovery discovery = new Discovery(Discovery.DISCOVERY_ADDR ,SERVICE_NAME, serverURI);
 		discovery.announce(SERVICE_NAME, serverURI);

@@ -1,6 +1,6 @@
 package tp1.clients;
 
-import java.net.URI;
+
 import java.util.function.Supplier;
 import java.util.logging.Logger;
 
@@ -12,7 +12,7 @@ import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.xml.ws.WebServiceException;
 
 public class SoapClient {
-	private static Logger Log = Logger.getLogger(SoapClient.class.getName());
+	protected static Logger Log = Logger.getLogger(SoapClient.class.getName());
 
 	protected static final int READ_TIMEOUT = 10000;
 	protected static final int CONNECT_TIMEOUT = 10000;
@@ -20,12 +20,11 @@ public class SoapClient {
 	protected static final int RETRY_SLEEP = 1000;
 	protected static final int MAX_RETRIES = 3;
 
-	protected final URI serverURI;
+
 	protected final Client client;
 	final ClientConfig config;
 
-	protected SoapClient(URI serverURI) {
-		this.serverURI = serverURI;
+	protected SoapClient() {
 		this.config = new ClientConfig();
 
 		config.property(ClientProperties.READ_TIMEOUT, READ_TIMEOUT);

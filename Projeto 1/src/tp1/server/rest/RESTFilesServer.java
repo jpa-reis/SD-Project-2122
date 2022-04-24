@@ -8,7 +8,7 @@ import org.glassfish.jersey.jdkhttp.JdkHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
 
 import tp1.Discovery;
-import tp1.server.rest_resources.FilesResource;
+import tp1.server.interoperable.rest_resources.FilesResources;
 
 
 public class RESTFilesServer {
@@ -28,7 +28,7 @@ public class RESTFilesServer {
 	public static void main(String[] args) {
 		try {
 		ResourceConfig config = new ResourceConfig();
-		config.register(FilesResource.class);
+		config.register(FilesResources.class);
 
 		
 		String ip = InetAddress.getLocalHost().getHostAddress();

@@ -42,9 +42,10 @@ public class SoapUsersWebService extends SoapClient implements SoapUsers {
 	final protected Map<String, User> users = new HashMap<>();
 	
 	public SoapUsersWebService() throws UnknownHostException {
-		super(URI.create(String.format(SERVER_URI_FMT, InetAddress.getLocalHost().getHostAddress(), PORT)));
+		super();
 		/*Initialize discovery system code*/
      
+		URI serverURI = URI.create(String.format(SERVER_URI_FMT, InetAddress.getLocalHost().getHostAddress(), PORT));
         discoverySystem = new Discovery(Discovery.DISCOVERY_ADDR, SERVICE, serverURI.toString());
         discoverySystem.listener(); 
         discoverySystem.announce(SERVICE, serverURI.toString());

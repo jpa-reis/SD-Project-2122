@@ -7,7 +7,7 @@ import java.util.logging.Logger;
 
 import jakarta.xml.ws.Endpoint;
 import tp1.Discovery;
-import tp1.server.soap_resources.SoapUsersWebService;
+import tp1.server.interoperable.soap_webServices.usersWebService;
 
 public class SOAPUsersServer {
 
@@ -29,7 +29,7 @@ public class SOAPUsersServer {
 		String ip = InetAddress.getLocalHost().getHostAddress();
 		String serverURI = String.format(SERVER_BASE_URI, ip, PORT);
 
-		Endpoint.publish(serverURI , new SoapUsersWebService());
+		Endpoint.publish(serverURI , new usersWebService());
 
 		Discovery discovery = new Discovery(Discovery.DISCOVERY_ADDR ,SERVICE_NAME, serverURI);
 		discovery.announce(SERVICE_NAME, serverURI);
