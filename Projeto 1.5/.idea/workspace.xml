@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="bf1ceaa2-039c-4d37-bf88-aef63e4278d5" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/../Projeto 2/.idea/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Projeto 2/.idea/compiler.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Projeto 2/.idea/encodings.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Projeto 2/.idea/jarRepositories.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Projeto 2/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Projeto 2/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../sd2122-aula8 (1)/sd2122-aula8/.classpath" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../sd2122-aula8 (1)/sd2122-aula8/.project" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../sd2122-aula8 (1)/sd2122-aula8/.settings/org.eclipse.core.resources.prefs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../sd2122-aula8 (1)/sd2122-aula8/.settings/org.eclipse.jdt.core.prefs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../sd2122-aula8 (1)/sd2122-aula8/.settings/org.eclipse.m2e.core.prefs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../sd2122-aula8 (1)/sd2122-aula8/Dockerfile" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../sd2122-aula8 (1)/sd2122-aula8/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../sd2122-aula8 (1)/sd2122-aula8/src/sd2122/aula8/dropbox/CreateDirectory.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../sd2122-aula8 (1)/sd2122-aula8/src/sd2122/aula8/dropbox/ListDirectory.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../sd2122-aula8 (1)/sd2122-aula8/src/sd2122/aula8/dropbox/msgs/CreateFolderV2Args.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../sd2122-aula8 (1)/sd2122-aula8/src/sd2122/aula8/dropbox/msgs/ListFolderArgs.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../sd2122-aula8 (1)/sd2122-aula8/src/sd2122/aula8/dropbox/msgs/ListFolderContinueArgs.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../sd2122-aula8 (1)/sd2122-aula8/src/sd2122/aula8/dropbox/msgs/ListFolderReturn.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../sd2122-aula8 (1)/sd2122-aula8/target/docker/sd2122-aula8-xxxxx-yyyyy/build/Dockerfile" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../sd2122-aula8 (1)/sd2122-aula8/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../sd2122-aula8 (1)/sd2122-aula8/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Projeto 1/.vscode/settings.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Projeto 1/Dockerfile" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Projeto 1/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Projeto 1/pom.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Projeto 1/src/tp1/Discovery.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Projeto 1/src/tp1/api/FileInfo.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Projeto 1/src/tp1/api/User.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Projeto 1/src/tp1/api/service/rest/RestDirectory.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Projeto 1/src/tp1/api/service/rest/RestFiles.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Projeto 1/src/tp1/api/service/rest/RestUsers.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Projeto 1/src/tp1/api/service/soap/DirectoryException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Projeto 1/src/tp1/api/service/soap/FilesException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Projeto 1/src/tp1/api/service/soap/SoapDirectory.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Projeto 1/src/tp1/api/service/soap/SoapFiles.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Projeto 1/src/tp1/api/service/soap/SoapUsers.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Projeto 1/src/tp1/api/service/soap/UsersException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Projeto 1/src/tp1/api/service/util/Directory.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Projeto 1/src/tp1/api/service/util/Files.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Projeto 1/src/tp1/api/service/util/Result.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Projeto 1/src/tp1/api/service/util/Users.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Projeto 1/src/tp1/clients/RestClient.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Projeto 1/src/tp1/clients/SoapClient.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Projeto 1/src/tp1/server/JavaDirectories.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Projeto 1/src/tp1/server/JavaFiles.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Projeto 1/src/tp1/server/JavaUsers.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Projeto 1/src/tp1/server/factory_clients/directory_clients/DirectoryClientFactory.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Projeto 1/src/tp1/server/factory_clients/directory_clients/RestDirectoryClient.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Projeto 1/src/tp1/server/factory_clients/directory_clients/SoapDirectoryClient.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Projeto 1/src/tp1/server/factory_clients/files_clients/FilesClientFactory.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Projeto 1/src/tp1/server/factory_clients/files_clients/RestFilesClient.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Projeto 1/src/tp1/server/factory_clients/files_clients/SoapFilesClient.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Projeto 1/src/tp1/server/factory_clients/users_clients/RestUsersClient.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Projeto 1/src/tp1/server/factory_clients/users_clients/SoapUsersClient.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Projeto 1/src/tp1/server/factory_clients/users_clients/UsersClientFactory.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Projeto 1/src/tp1/server/rest_resources/DirResources.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Projeto 1/src/tp1/server/rest_resources/FilesResources.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Projeto 1/src/tp1/server/rest_resources/UsersResources.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Projeto 1/src/tp1/server/rest_servers/RESTDirServer.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Projeto 1/src/tp1/server/rest_servers/RESTFilesServer.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Projeto 1/src/tp1/server/rest_servers/RESTUsersServer.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Projeto 1/src/tp1/server/soap_servers/SOAPDirServer.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Projeto 1/src/tp1/server/soap_servers/SOAPFilesServer.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Projeto 1/src/tp1/server/soap_servers/SOAPUsersServer.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Projeto 1/src/tp1/server/soap_webServices/dirWebService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Projeto 1/src/tp1/server/soap_webServices/filesWebService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Projeto 1/src/tp1/server/soap_webServices/usersWebService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Projeto 1/src/tp1/server/util/CustomLoggingFilter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Projeto 1/src/tp1/server/util/GenericExceptionMapper.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Projeto 1/target/docker/sd2122-tp1-57672-58175/build/Dockerfile" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Projeto 1/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Projeto 1/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Projeto 1/test-sd-tp1.bat" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Projeto 1/test-sd-tp1.sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Projeto 1/trab.props" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="useMavenConfig" value="true" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
+  <component name="ProjectId" id="29tRnDNlcxyIgcjj0KXBXARMSbH" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "last_opened_file_path": "/home/jpareis/Desktop/SD/Projeto 1.5",
+    "nodejs_package_manager_path": "npm"
+  }
+}]]></component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="bf1ceaa2-039c-4d37-bf88-aef63e4278d5" name="Changes" comment="" />
+      <created>1653930561170</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1653930561170</updated>
+      <workItem from="1653930562606" duration="11000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>
