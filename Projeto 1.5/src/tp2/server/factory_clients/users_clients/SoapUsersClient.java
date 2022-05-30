@@ -1,0 +1,92 @@
+package tp2.server.factory_clients.users_clients;
+
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.util.List;
+
+import javax.xml.namespace.QName;
+
+import jakarta.xml.ws.Service;
+import tp2.api.User;
+import tp2.api.service.soap.SoapUsers;
+import tp2.api.service.soap.UsersException;
+import tp2.api.service.util.Result;
+import tp2.api.service.util.Users;
+import tp2.api.service.util.Result.ErrorCode;
+import tp2.clients.SoapClient;
+
+
+public class SoapUsersClient extends SoapClient implements Users{
+
+    private static final String CONFLICT = "Conflict";
+	private static final String BAD_REQUEST = "Bad Request";
+	private static final String NOT_FOUND = "Not found";
+	private static final String FORBIDDEN = "Wrong password";
+
+    private URI serverURI;
+
+    public SoapUsersClient(URI serverURI){
+        super();
+        this.serverURI = serverURI;
+    }
+
+    @Override
+    public Result<String> createUser(User user) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Result<User> getUser(String userId, String password) {
+        return reTry(() -> {
+            QName qname = new QName(SoapUsers.NAMESPACE, SoapUsers.NAME);		
+            Service service;
+            try {
+                service = Service.create( URI.create(serverURI+ "?wsdl").toURL(), qname);
+            } catch (MalformedURLException e1) {
+                e1.printStackTrace();
+                return null;
+            }	
+
+            SoapUsers users = service.getPort(tp2.api.service.soap.SoapUsers.class);
+            try {
+                return Result.ok(users.getUser(userId, password));
+            } catch (UsersException e1) {
+                return Result.error(getErrorCode(e1.getMessage()));
+            }
+        });
+    }
+
+    @Override
+    public Result<User> updateUser(String userId, String password, User user) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Result<User> deleteUser(String userId, String password) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Result<List<User>> searchUsers(String pattern) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    private ErrorCode getErrorCode(String code){
+        switch(code){
+            case NOT_FOUND: 
+                return ErrorCode.NOT_FOUND;
+            case BAD_REQUEST:
+                return ErrorCode.BAD_REQUEST;
+            case FORBIDDEN:
+                return ErrorCode.FORBIDDEN;
+            default:
+                return ErrorCode.CONFLICT;
+        }
+        
+    }
+    
+}
