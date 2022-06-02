@@ -8,7 +8,7 @@ public interface SoapFiles {
 
 	static final String NAME = "files";
 	static final String NAMESPACE = "http://sd2122";
-	static final String INTERFACE = "tp1.api.service.soap.SoapFiles";
+	static final String INTERFACE = "tp2.api.service.soap.SoapFiles";
 
 	@WebMethod
 	byte[] getFile(String fileId, String token) throws FilesException;

@@ -4,6 +4,7 @@ import static tp2.api.service.java.Result.error;
 import static tp2.api.service.java.Result.ok;
 
 import java.net.URI;
+import java.util.logging.Logger;
 
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.client.ClientProperties;
@@ -17,6 +18,7 @@ import jakarta.ws.rs.core.Response.Status;
 import tp2.api.service.java.Result;
 import tp2.api.service.java.Result.ErrorCode;
 import tp2.impl.clients.common.RetryClient;
+import tp2.impl.servers.soap.FilesSoapServer;
 
 /**
  * 
@@ -35,7 +37,7 @@ abstract class RestClient extends RetryClient {
 	protected final Client client;
 	protected final WebTarget target;
 	protected final ClientConfig config;
-
+	private static Logger Log = Logger.getLogger(RestClient.class.getName());
 	public RestClient(URI uri, String path) {
 		this.uri = uri;
 		this.config = new ClientConfig();
@@ -75,19 +77,6 @@ abstract class RestClient extends RetryClient {
 
 	static private ErrorCode getErrorCodeFrom(Status status) {
 		return switch (status.getStatusCode()) {
-		case 200, 209 -> ErrorCode.OK;
-		case 409 -> ErrorCode.CONFLICT;
-		case 403 -> ErrorCode.FORBIDDEN;
-		case 404 -> ErrorCode.NOT_FOUND;
-		case 400 -> ErrorCode.BAD_REQUEST;
-		case 500 -> ErrorCode.INTERNAL_ERROR;
-		case 501 -> ErrorCode.NOT_IMPLEMENTED;
-		default -> ErrorCode.INTERNAL_ERROR;
-		};
-	}
-
-	static private ErrorCode getErrorCodeFrom(int status) {
-		return switch (status) {
 			case 200, 209 -> ErrorCode.OK;
 			case 409 -> ErrorCode.CONFLICT;
 			case 403 -> ErrorCode.FORBIDDEN;
@@ -102,30 +91,6 @@ abstract class RestClient extends RetryClient {
 	@Override
 	public String toString() {
 		return uri.toString();
-	}
-
-	protected Result<Void> toJavaResult(com.github.scribejava.core.model.Response r) {
-		try {
-			var status = r.getCode();
-			if (status == Status.NO_CONTENT.getStatusCode())
-				return ok();
-			else
-				return error(getErrorCodeFrom(status));
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	protected <T> Result<T> toJavaResult(com.github.scribejava.core.model.Response r, GenericType<T> gtype) {
-		try {
-			var status = r.getCode();
-			if (status == Status.OK.getStatusCode())
-				return (Result<T>) ok(r.getMessage());
-			else
-				return error(getErrorCodeFrom(status));
-		}  catch (Exception e) {
-			throw new RuntimeException(e);
-		}
 	}
 
 }

@@ -7,7 +7,7 @@ import tp2.api.service.java.Directory;
 import tp2.api.service.java.Users;
 import tp2.impl.clients.Clients;
 import tp2.impl.servers.rest.DirectoryRestServer;
-import tp2.impl.servers.rest.FilesRestServer;
+import tp2.impl.servers.rest.DropboxFilesRestServer;
 import tp2.impl.servers.rest.UsersRestServer;
 import util.Debug;
 
@@ -16,7 +16,7 @@ public class Test {
 	public static void main(String[] args) throws Exception {
 		UsersRestServer.main( new String[] { "xxx" });
 		DirectoryRestServer.main( new String[] {"xxx"});
-		FilesRestServer.main(new String[] {"xxx"});
+		DropboxFilesRestServer.main(new String[] {"xxx"});
 
 		
 		Debug.setLogLevel(Level.INFO, "");

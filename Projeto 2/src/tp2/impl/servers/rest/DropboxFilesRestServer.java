@@ -13,19 +13,19 @@ import util.Token;
 
 import javax.net.ssl.HttpsURLConnection;
 
-public class FilesRestServer extends AbstractRestServer {
+public class DropboxFilesRestServer extends AbstractRestServer {
 	public static final int PORT = 5678;
 	
-	private static Logger Log = Logger.getLogger(FilesRestServer.class.getName());
+	private static Logger Log = Logger.getLogger(DropboxFilesRestServer.class.getName());
 
 	
-	FilesRestServer() {
+	DropboxFilesRestServer() {
 		super(Log, Files.SERVICE_NAME, PORT);
 	}
 	
 	@Override
 	void registerResources(ResourceConfig config) {
-		config.register( FilesResources.class ); 
+		config.register( DropboxFilesResources.class );
 		config.register( GenericExceptionMapper.class );
 	}
 	
@@ -34,7 +34,8 @@ public class FilesRestServer extends AbstractRestServer {
 		Debug.setLogLevel( Level.INFO, Debug.TP1);
 		
 		Token.set( args.length == 0 ? "" : args[0] );
+
 		HttpsURLConnection.setDefaultHostnameVerifier(new InsecureHostnameVerifier());
-		new FilesRestServer().start();
+		new DropboxFilesRestServer().start();
 	}	
 }

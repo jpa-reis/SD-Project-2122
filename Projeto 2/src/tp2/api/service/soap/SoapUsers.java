@@ -11,7 +11,7 @@ public interface SoapUsers {
 
 	static final String NAME = "users";
 	static final String NAMESPACE = "http://sd2122";
-	static final String INTERFACE = "tp1.api.service.soap.SoapUsers";
+	static final String INTERFACE = "tp2.api.service.soap.SoapUsers";
 
 	@WebMethod
 	String createUser(User user) throws UsersException;

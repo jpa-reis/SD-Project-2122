@@ -1,4 +1,4 @@
-package tp2.impl.clients.rest;
+package tp2.impl.servers.rest.records;
 
 public record DeleteFileArgs(String path) {
 

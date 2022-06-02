@@ -6,9 +6,12 @@ import java.util.logging.Logger;
 import org.glassfish.jersey.server.ResourceConfig;
 
 import tp2.api.service.java.Users;
+import tp2.impl.servers.common.InsecureHostnameVerifier;
 import tp2.impl.servers.rest.util.GenericExceptionMapper;
 import util.Debug;
 import util.Token;
+
+import javax.net.ssl.HttpsURLConnection;
 
 
 public class UsersRestServer extends AbstractRestServer {
@@ -25,7 +28,6 @@ public class UsersRestServer extends AbstractRestServer {
 	void registerResources(ResourceConfig config) {
 		config.register( UsersResources.class ); 
 		config.register( GenericExceptionMapper.class);
-//		config.register( CustomLoggingFilter.class);
 	}
 	
 	
@@ -34,7 +36,7 @@ public class UsersRestServer extends AbstractRestServer {
 		Debug.setLogLevel( Level.INFO, Debug.TP1);
 		
 		Token.set( args.length == 0 ? "" : args[0] );
-		
+		HttpsURLConnection.setDefaultHostnameVerifier(new InsecureHostnameVerifier());
 		new UsersRestServer().start();
 	}	
 }

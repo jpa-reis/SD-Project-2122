@@ -11,7 +11,7 @@ public interface SoapDirectory {
 	
 	static final String NAME = "dir";
 	static final String NAMESPACE = "http://sd2122";
-	static final String INTERFACE = "tp1.api.service.soap.SoapDirectory";
+	static final String INTERFACE = "tp2.api.service.soap.SoapDirectory";
 
 
 	@WebMethod

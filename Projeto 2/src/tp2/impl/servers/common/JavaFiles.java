@@ -9,15 +9,18 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Comparator;
+import java.util.logging.Logger;
 
 import tp2.api.service.java.Files;
 import tp2.api.service.java.Result;
+import tp2.impl.servers.soap.DirectorySoapServer;
 import util.IO;
 
 public class JavaFiles implements Files {
 
 	static final String DELIMITER = "$$$";
 	private static final String ROOT = "/tmp/";
+	private static Logger Log = Logger.getLogger(JavaFiles.class.getName());
 	
 	public JavaFiles() {
 		new File( ROOT ).mkdirs();

@@ -20,6 +20,16 @@ public class RestResource {
 			throw new WebApplicationException(statusCode(result));
 	}
 
+	protected <T> T resultOrThrowGetFiles(Result<T> result) {
+		if (result.isOK())
+			return result.value();
+		else if(statusCode(result) == Status.CONFLICT) throw new WebApplicationException(Status.NOT_FOUND);
+		else{
+			throw new WebApplicationException(statusCode(result));
+		}
+	}
+
+
 	/**
 	 * Translates a Result<T> to a HTTP Status code
 	 */
