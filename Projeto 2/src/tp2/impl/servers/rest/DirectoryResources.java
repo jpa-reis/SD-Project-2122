@@ -14,6 +14,8 @@ import tp2.api.service.rest.RestDirectory;
 import tp2.impl.servers.common.JavaDirectory;
 import util.Token;
 
+import tp2.impl.servers.zookeeper.Zookeeper;
+
 @Singleton
 public class DirectoryResources extends RestResource implements RestDirectory {
 	private static Logger Log = Logger.getLogger(DirectoryResources.class.getName());
@@ -21,6 +23,10 @@ public class DirectoryResources extends RestResource implements RestDirectory {
 	private static final String REST = "/rest/";
 
 	final Directory impl;
+
+	//
+	private static Zookeeper zk;
+	//
 
 	public DirectoryResources() {
 		impl = new JavaDirectory();
@@ -30,6 +36,9 @@ public class DirectoryResources extends RestResource implements RestDirectory {
 		Log.info(String.format("REST writeFile: filename = %s, data.length = %d, userId = %s, password = %s \n",
 				filename, data.length, userId, password));
 
+		//String primaryServer = zk.getChildren("/files/" + )[0];
+		//Write no primaryServer e enviar para os secondary
+				
 		return super.resultOrThrow(impl.writeFile(filename, data, userId, password));
 	}
 
