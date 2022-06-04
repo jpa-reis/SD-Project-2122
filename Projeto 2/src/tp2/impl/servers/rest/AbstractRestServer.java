@@ -4,6 +4,9 @@ import java.net.URI;
 import java.security.NoSuchAlgorithmException;
 import java.util.logging.Logger;
 
+import tp2.impl.servers.zookeeper.Zookeeper;
+import org.apache.zookeeper.CreateMode;
+
 import org.glassfish.jersey.jdkhttp.JdkHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
 
@@ -14,11 +17,17 @@ import util.IP;
 import javax.net.ssl.SSLContext;
 
 public abstract class AbstractRestServer extends AbstractServer {
-	
+
+	//
+	private static Zookeeper zk;
+	String service;
+	//
+
 	protected static String SERVER_BASE_URI = "https://%s:%s/rest";
 	
 	protected AbstractRestServer(Logger log, String service, int port) {
 		super(log, service, port);
+		this.service = service;
 	}
 
 
@@ -33,6 +42,13 @@ public abstract class AbstractRestServer extends AbstractServer {
 		JdkHttpServerFactory.createHttpServer( URI.create(serverURI.replace(ip, INETADDR_ANY)), config, SSLContext.getDefault());
 
 		Log.info(String.format("%s Server ready @ %s\n",  service, serverURI));
+
+		zk.createNode("/" + service + "/" + serverURI, new byte[0], CreateMode.EPHEMERAL);
+		//
+		for( int i = 0; i < 5; i++) {
+			zk.createNode("/" + service + "/" + serverURI + "/", new byte[0], CreateMode.EPHEMERAL_SEQUENTIAL);
+		}
+		//
 		
 		Discovery.getInstance().announce(service, serverURI);
 	}
