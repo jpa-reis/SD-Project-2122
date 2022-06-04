@@ -15,6 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import tp2.api.User;
 import tp2.api.service.java.Result;
 import tp2.api.service.java.Users;
@@ -83,9 +84,9 @@ public class JavaUsers implements Users {
 		else {
 			users.remove(userId);
 			executor.execute(()->{
-				DirectoryClients.get().deleteUserFiles(userId, password, Token.get());
+				DirectoryClients.get().deleteUserFiles(userId, password, DigestUtils.sha512Hex(Token.get()));
 				for( var uri : FilesClients.all())
-					FilesClients.get(uri).deleteUserFiles( userId, password);
+					FilesClients.get(uri).deleteUserFiles( userId, DigestUtils.sha512Hex(Token.get()));
 			});
 			return ok(user);
 		}

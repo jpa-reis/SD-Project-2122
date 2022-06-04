@@ -6,6 +6,7 @@ import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 import tp2.api.service.java.Result;
+import util.Token;
 
 public class RestResource {
 
@@ -62,4 +63,5 @@ public class RestResource {
 		var location = URI.create(result.errorValue());
 		throw new WebApplicationException(Response.temporaryRedirect(location).build());
 	}
+
 }

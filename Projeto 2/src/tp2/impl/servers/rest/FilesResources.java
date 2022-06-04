@@ -3,9 +3,12 @@ package tp2.impl.servers.rest;
 import java.util.logging.Logger;
 
 import jakarta.inject.Singleton;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Response;
 import tp2.api.service.java.Files;
 import tp2.api.service.rest.RestFiles;
 import tp2.impl.servers.common.JavaFiles;
+import util.Token;
 
 @Singleton
 public class FilesResources extends RestResource implements RestFiles {

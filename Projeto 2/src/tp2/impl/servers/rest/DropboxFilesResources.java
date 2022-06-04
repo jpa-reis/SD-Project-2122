@@ -32,7 +32,7 @@ public class DropboxFilesResources extends RestResource implements RestFiles {
 	//KEYS
 	private static final String apiKey = "m8vaidvv3hknd8x";
 	private static final String apiSecret = "669zf51aonq1hsq";
-	private static final String accessTokenStr = "sl.BIwmITyTV-2673X9iVxL2Zgmfqet1WBLCsMnso84CoeoKDHIR22yKLpLj5b2W-Igmh62EKBHL3PTrYTBzmnjwSJ2EXnp42HT_kRA_z4WkCFPY2UOOtAaGZV8Qx2fYx7OYM9Y5JfVAssA";
+	private static final String accessTokenStr = "sl.BIxIoWEydqwLZczvG01xyjRAR-NsaXkX_ELlcTcGkOe2yDamzVYnpQJlQYAm4qitt4xaclqeo0mfCm9Xe2ti8GcAXiGQB7vCpRt1owS1VAJow1rCRc3AIsc_dgd6VsTExHfDtOYcKBII";
 	private static final String USER = "user";
 	private static final String CREATE_FILE_URL = "https://content.dropboxapi.com/2/files/upload";
 	private static final String DELETE_FILE_URL = "https://api.dropboxapi.com/2/files/delete_v2";

@@ -29,6 +29,9 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Response;
+import org.apache.commons.codec.digest.DigestUtils;
 import tp2.api.FileInfo;
 import tp2.api.User;
 import tp2.api.service.java.Directory;
@@ -59,7 +62,7 @@ public class JavaDirectory implements Directory {
 	final Map<String, ExtendedFileInfo> files = new ConcurrentHashMap<>();
 	final Map<String, UserFiles> userFiles = new ConcurrentHashMap<>();
 	final Map<URI, FileCounts> fileCounts = new ConcurrentHashMap<>();
-	
+
 	@Override
 	public Result<FileInfo> writeFile(String filename, byte[] data, String userId, String password) {
 
@@ -76,7 +79,7 @@ public class JavaDirectory implements Directory {
 			var file = files.get(fileId);
 			var info = file != null ? file.info() : new FileInfo();
 			for (var uri :  orderCandidateFileServers(file)) {
-				var result = FilesClients.get(uri).writeFile(fileId, data, Token.get());
+				var result = FilesClients.get(uri).writeFile(fileId, data, DigestUtils.sha512Hex(Token.get()));
 				if (result.isOK()) {
 					info.setOwner(userId);
 					info.setFilename(filename);
@@ -115,7 +118,7 @@ public class JavaDirectory implements Directory {
 
 			executor.execute(() -> {
 				this.removeSharesOfFile(info);
-				FilesClients.get(file.uri()).deleteFile(fileId, password);
+				FilesClients.get(file.uri()).deleteFile(fileId, DigestUtils.sha512Hex(Token.get()));
 			});
 			
 			getFileCounts(info.uri(), false).numFiles().decrementAndGet();
@@ -228,6 +231,7 @@ public class JavaDirectory implements Directory {
 	
 	@Override
 	public Result<Void> deleteUserFiles(String userId, String password, String token) {
+		verifyToken(token);
 		users.invalidate( new UserInfo(userId, password));
 		
 		var fileIds = userFiles.remove(userId);
@@ -298,5 +302,11 @@ public class JavaDirectory implements Directory {
 	}	
 	
 	static record UserInfo(String userId, String password) {		
+	}
+
+	private void verifyToken(String token){
+		if(!DigestUtils.sha512Hex(Token.get()).equals(token)){
+			throw new WebApplicationException(Response.Status.FORBIDDEN);
+		}
 	}
 }

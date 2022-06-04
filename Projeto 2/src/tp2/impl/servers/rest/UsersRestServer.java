@@ -3,6 +3,7 @@ package tp2.impl.servers.rest;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.glassfish.jersey.server.ResourceConfig;
 
 import tp2.api.service.java.Users;
@@ -36,6 +37,7 @@ public class UsersRestServer extends AbstractRestServer {
 		Debug.setLogLevel( Level.INFO, Debug.TP1);
 		
 		Token.set( args.length == 0 ? "" : args[0] );
+
 		HttpsURLConnection.setDefaultHostnameVerifier(new InsecureHostnameVerifier());
 		new UsersRestServer().start();
 	}	

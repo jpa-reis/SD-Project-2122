@@ -3,6 +3,7 @@ package tp2.impl.servers.rest;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.glassfish.jersey.server.ResourceConfig;
 
 import tp2.api.service.java.Directory;
@@ -26,8 +27,7 @@ public class DirectoryRestServer extends AbstractRestServer {
 	@Override
 	void registerResources(ResourceConfig config) {
 		config.register( DirectoryResources.class ); 
-		config.register( GenericExceptionMapper.class );		
-//		config.register( CustomLoggingFilter.class);
+		config.register( GenericExceptionMapper.class );
 	}
 	
 	public static void main(String[] args) throws Exception {

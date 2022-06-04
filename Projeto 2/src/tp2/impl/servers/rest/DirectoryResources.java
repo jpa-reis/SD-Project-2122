@@ -6,11 +6,13 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import jakarta.inject.Singleton;
+import org.apache.commons.codec.digest.DigestUtils;
 import tp2.api.FileInfo;
 import tp2.api.service.java.Directory;
 import tp2.api.service.java.Result.ErrorCode;
 import tp2.api.service.rest.RestDirectory;
 import tp2.impl.servers.common.JavaDirectory;
+import util.Token;
 
 @Singleton
 public class DirectoryResources extends RestResource implements RestDirectory {
@@ -64,7 +66,7 @@ public class DirectoryResources extends RestResource implements RestDirectory {
 		if (res.error() == ErrorCode.REDIRECT) {
 			String location = res.errorValue();
 			if (!location.contains(REST))
-				res = FilesClients.get(location).getFile(JavaDirectory.fileId(filename, userId), password);
+				res = FilesClients.get(location).getFile(JavaDirectory.fileId(filename, userId), DigestUtils.sha512Hex(Token.get()));
 		}
 		return super.resultOrThrow(res);
 

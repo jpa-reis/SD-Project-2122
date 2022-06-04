@@ -3,6 +3,7 @@ package tp2.impl.servers.rest;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.glassfish.jersey.server.ResourceConfig;
 
 import tp2.api.service.java.Files;
