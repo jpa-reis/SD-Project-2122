@@ -20,7 +20,7 @@ public class DirectoryRestServer extends AbstractRestServer {
 	
 	private static Logger Log = Logger.getLogger(DirectoryRestServer.class.getName());
 
-	DirectoryRestServer() {
+	DirectoryRestServer() throws Exception {
 		super(Log, Directory.SERVICE_NAME, PORT);
 	}
 	

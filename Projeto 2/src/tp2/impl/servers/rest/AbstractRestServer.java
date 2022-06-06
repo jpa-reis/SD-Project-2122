@@ -1,5 +1,7 @@
 package tp2.impl.servers.rest;
 
+import java.io.FileWriter;
+import java.io.PrintWriter;
 import java.net.URI;
 import java.security.NoSuchAlgorithmException;
 import java.util.logging.Logger;
@@ -18,10 +20,7 @@ import javax.net.ssl.SSLContext;
 
 public abstract class AbstractRestServer extends AbstractServer {
 
-	//
-	private static Zookeeper zk;
 	String service;
-	//
 
 	protected static String SERVER_BASE_URI = "https://%s:%s/rest";
 	
@@ -31,25 +30,18 @@ public abstract class AbstractRestServer extends AbstractServer {
 	}
 
 
-	protected void start() throws NoSuchAlgorithmException {
+	protected void start() throws Exception {
+
 		String ip = IP.hostAddress();
 		String serverURI = String.format(SERVER_BASE_URI, ip, port);
 		
 		ResourceConfig config = new ResourceConfig();
 		
 		registerResources( config );
-		
 		JdkHttpServerFactory.createHttpServer( URI.create(serverURI.replace(ip, INETADDR_ANY)), config, SSLContext.getDefault());
 
 		Log.info(String.format("%s Server ready @ %s\n",  service, serverURI));
 
-		zk.createNode("/" + service + "/" + serverURI, new byte[0], CreateMode.EPHEMERAL);
-		//
-		for( int i = 0; i < 5; i++) {
-			zk.createNode("/" + service + "/" + serverURI + "/", new byte[0], CreateMode.EPHEMERAL_SEQUENTIAL);
-		}
-		//
-		
 		Discovery.getInstance().announce(service, serverURI);
 	}
 	

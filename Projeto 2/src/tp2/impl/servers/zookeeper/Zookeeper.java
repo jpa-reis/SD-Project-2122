@@ -11,6 +11,7 @@ import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.ZooKeeper;
+import tp2.impl.servers.rest.DropboxFilesResources;
 
 public class Zookeeper implements Watcher {
 
@@ -19,6 +20,9 @@ public class Zookeeper implements Watcher {
 
 	public Zookeeper(String servers) throws Exception {
 		this.connect(servers, TIMEOUT);
+	}
+	public Zookeeper(String servers, boolean flag) throws Exception {
+		this.connectExternalService(servers, TIMEOUT, flag);
 	}
 
 	public synchronized ZooKeeper client() {
@@ -32,7 +36,22 @@ public class Zookeeper implements Watcher {
 		var connectedSignal = new CountDownLatch(1);
 		_client = new ZooKeeper(host, TIMEOUT, (e) -> {
 			System.err.println( e );
-			if (e.getState().equals(Watcher.Event.KeeperState.SyncConnected)) {
+			if (e.getState().equals( Watcher.Event.KeeperState.SyncConnected)) {
+				connectedSignal.countDown();
+			}
+		});
+		connectedSignal.await();
+	}
+
+	private void connectExternalService(String host, int timeout, boolean flag) throws IOException, InterruptedException {
+		var connectedSignal = new CountDownLatch(1);
+		_client = new ZooKeeper(host, TIMEOUT, (e) -> {
+			System.err.println( e );
+			if (e.getState().equals(Watcher.Event.KeeperState.SyncConnected) && flag) {
+				connectedSignal.countDown();
+				new DropboxFilesResources().deleteAll();
+			}
+			else if(e.getState().equals(Watcher.Event.KeeperState.SyncConnected)) {
 				connectedSignal.countDown();
 			}
 		});
@@ -71,25 +90,14 @@ public class Zookeeper implements Watcher {
 	public static void main(String[] args) throws Exception {
 
 		String host = args.length == 0 ? "localhost" : args[0];
-		
+
 		var zk = new Zookeeper(host);
 
-		//
-		String directoryPath = "/directory";
-		String filesPath = "/files";
-		String usersPath = "/users";
-
-		zk.createNode(directoryPath, new byte[0], CreateMode.PERSISTENT);
-		zk.createNode(filesPath, new byte[0], CreateMode.PERSISTENT);
-		zk.createNode(usersPath, new byte[0], CreateMode.PERSISTENT);
-		//
-		
-		/* 
 		String root = "/directory";
 
 		var path = zk.createNode(root, new byte[0], CreateMode.PERSISTENT);
 		System.err.println( path );
-		
+
 		zk.getChildren(root).forEach(System.out::println);
 
 		for( int i = 0; i < 10; i++) {
@@ -100,10 +108,8 @@ public class Zookeeper implements Watcher {
 		zk.getChildren(root, (e) -> {
 			zk.getChildren(root).forEach( System.out::println );
 		});
-		
 
 		Thread.sleep(Integer.MAX_VALUE);
-		*/
 	}
 
 	@Override

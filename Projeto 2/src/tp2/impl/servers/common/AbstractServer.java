@@ -17,7 +17,7 @@ public abstract class AbstractServer {
 		this.Log = log;
 	}
 	
-	abstract protected void start() throws NoSuchAlgorithmException, IOException;
+	abstract protected void start() throws Exception;
 	
 	static {
 		System.setProperty("java.net.preferIPv4Stack", "true");

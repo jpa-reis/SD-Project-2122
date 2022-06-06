@@ -3,12 +3,13 @@ package tp2.impl.servers.rest;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.zookeeper.CreateMode;
 import org.glassfish.jersey.server.ResourceConfig;
 
 import tp2.api.service.java.Files;
 import tp2.impl.servers.common.InsecureHostnameVerifier;
 import tp2.impl.servers.rest.util.GenericExceptionMapper;
+import tp2.impl.servers.zookeeper.Zookeeper;
 import util.Debug;
 import util.Token;
 
@@ -18,9 +19,8 @@ public class FilesRestServer extends AbstractRestServer {
 	public static final int PORT = 5678;
 	
 	private static Logger Log = Logger.getLogger(FilesRestServer.class.getName());
-
 	
-	FilesRestServer() {
+	FilesRestServer() throws Exception {
 		super(Log, Files.SERVICE_NAME, PORT);
 	}
 	
@@ -38,5 +38,5 @@ public class FilesRestServer extends AbstractRestServer {
 
 		HttpsURLConnection.setDefaultHostnameVerifier(new InsecureHostnameVerifier());
 		new FilesRestServer().start();
-	}	
+	}
 }

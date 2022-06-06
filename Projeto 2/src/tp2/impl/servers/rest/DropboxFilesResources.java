@@ -32,12 +32,13 @@ public class DropboxFilesResources extends RestResource implements RestFiles {
 	//KEYS
 	private static final String apiKey = "m8vaidvv3hknd8x";
 	private static final String apiSecret = "669zf51aonq1hsq";
-	private static final String accessTokenStr = "sl.BIxIoWEydqwLZczvG01xyjRAR-NsaXkX_ELlcTcGkOe2yDamzVYnpQJlQYAm4qitt4xaclqeo0mfCm9Xe2ti8GcAXiGQB7vCpRt1owS1VAJow1rCRc3AIsc_dgd6VsTExHfDtOYcKBII";
+	private static final String accessTokenStr = "sl.BI9YjlYB7M1NeR1rxf1hzotj7mfcUIiD5wkF_G-rpQNCXpzeZygd4H79eFgFFWYVWjKDMvu2TrG2NkjYu2Mj1VPJ8W3Xk9LoVNpk2XIWm6MLiJiTfPNdKdnR4P0gCG4eic1iSo_9mVMt";
 	private static final String USER = "user";
 	private static final String CREATE_FILE_URL = "https://content.dropboxapi.com/2/files/upload";
 	private static final String DELETE_FILE_URL = "https://api.dropboxapi.com/2/files/delete_v2";
 	private static final String GET_FILE_URL = "https://content.dropboxapi.com/2/files/download";
 	private static final String DELETE_USER_FILES_URL = "https://api.dropboxapi.com/2/files/delete_v2";
+	private static final String FILES_FOLDER = "/files";
 
 	//HTTP_CODES
 	private static final int HTTP_SUCCESS = 200;
@@ -57,13 +58,12 @@ public class DropboxFilesResources extends RestResource implements RestFiles {
 		json = new Gson();
 		accessToken = new OAuth2AccessToken(accessTokenStr);
 		service = new ServiceBuilder(apiKey).apiSecret(apiSecret).build(DropboxApi20.INSTANCE);
-
 	}
 
 	@Override
 	public void writeFile(String fileId, byte[] data, String token) {
 		var uploadFile = new OAuthRequest(Verb.POST, CREATE_FILE_URL);
-		uploadFile.addHeader(DROPBOX_API_ARG, json.toJson(new UploadFileArgs("/" + fileId.split(Pattern.quote(DELIMITER))[0] + "/" + fileId, "overwrite", false, false, false)));
+		uploadFile.addHeader(DROPBOX_API_ARG, json.toJson(new UploadFileArgs(FILES_FOLDER + "/" + fileId.split(Pattern.quote(DELIMITER))[0] + "/" + fileId, "overwrite", false, false, false)));
 		uploadFile.addHeader(CONTENT_TYPE_HDR, OCTET_CONTENT_TYPE);
 		uploadFile.setPayload(data);
 		service.signRequest(accessToken, uploadFile);
@@ -79,7 +79,7 @@ public class DropboxFilesResources extends RestResource implements RestFiles {
 	public void deleteFile(String fileId, String token) {
 		var deleteFile = new OAuthRequest(Verb.POST, DELETE_FILE_URL);
 		deleteFile.addHeader(CONTENT_TYPE_HDR, JSON_CONTENT_TYPE);
-		deleteFile.setPayload(json.toJson(new DeleteFileArgs("/" + fileId.split(Pattern.quote(DELIMITER))[0]  + "/" + fileId)));
+		deleteFile.setPayload(json.toJson(new DeleteFileArgs(FILES_FOLDER + "/" + fileId.split(Pattern.quote(DELIMITER))[0]  + "/" + fileId)));
 		service.signRequest(accessToken, deleteFile);
 		try {
 			super.resultOrThrow(toJavaResult(service.execute(deleteFile)));
@@ -88,10 +88,21 @@ public class DropboxFilesResources extends RestResource implements RestFiles {
 		}
 	}
 
+	public void deleteAll() {
+		var deleteFile = new OAuthRequest(Verb.POST, DELETE_FILE_URL);
+		deleteFile.addHeader(CONTENT_TYPE_HDR, JSON_CONTENT_TYPE);
+		deleteFile.setPayload(json.toJson(new DeleteFileArgs(FILES_FOLDER)));
+		service.signRequest(accessToken, deleteFile);
+		try {
+			super.resultOrThrow(toJavaResult(service.execute(deleteFile)));
+		} catch (InterruptedException | ExecutionException | IOException e) {
+			e.printStackTrace();
+		}
+	}
 	@Override
 	public byte[] getFile(String fileId, String token) {
 		var getFile = new OAuthRequest(Verb.GET, GET_FILE_URL);
-		getFile.addHeader(DROPBOX_API_ARG, json.toJson(new GetFileArgs("/" + fileId.split(Pattern.quote(DELIMITER))[0]  + "/" + fileId)));
+		getFile.addHeader(DROPBOX_API_ARG, json.toJson(new GetFileArgs(FILES_FOLDER + "/" + fileId.split(Pattern.quote(DELIMITER))[0]  + "/" + fileId)));
 		service.signRequest(accessToken, getFile);
 		try {
 			com.github.scribejava.core.model.Response r = service.execute(getFile);
@@ -107,7 +118,7 @@ public class DropboxFilesResources extends RestResource implements RestFiles {
 	public void deleteUserFiles(String userId, String token) {
 		var deleteFile = new OAuthRequest(Verb.POST, DELETE_FILE_URL);
 		deleteFile.addHeader(CONTENT_TYPE_HDR, JSON_CONTENT_TYPE);
-		deleteFile.setPayload(json.toJson(new DeleteFileArgs("/" + userId)));
+		deleteFile.setPayload(json.toJson(new DeleteFileArgs(FILES_FOLDER + "/" + userId)));
 		service.signRequest(accessToken, deleteFile);
 		try {
 			super.resultOrThrow(toJavaResult(service.execute(deleteFile)));

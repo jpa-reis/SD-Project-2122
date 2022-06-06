@@ -14,7 +14,6 @@ import tp2.api.service.rest.RestDirectory;
 import tp2.impl.servers.common.JavaDirectory;
 import util.Token;
 
-import tp2.impl.servers.zookeeper.Zookeeper;
 
 @Singleton
 public class DirectoryResources extends RestResource implements RestDirectory {
@@ -24,10 +23,6 @@ public class DirectoryResources extends RestResource implements RestDirectory {
 
 	final Directory impl;
 
-	//
-	private static Zookeeper zk;
-	//
-
 	public DirectoryResources() {
 		impl = new JavaDirectory();
 	}
@@ -35,9 +30,6 @@ public class DirectoryResources extends RestResource implements RestDirectory {
 	public FileInfo writeFile(String filename, byte[] data, String userId, String password) {
 		Log.info(String.format("REST writeFile: filename = %s, data.length = %d, userId = %s, password = %s \n",
 				filename, data.length, userId, password));
-
-		//String primaryServer = zk.getChildren("/files/" + )[0];
-		//Write no primaryServer e enviar para os secondary
 				
 		return super.resultOrThrow(impl.writeFile(filename, data, userId, password));
 	}
@@ -76,6 +68,16 @@ public class DirectoryResources extends RestResource implements RestDirectory {
 			String location = res.errorValue();
 			if (!location.contains(REST))
 				res = FilesClients.get(location).getFile(JavaDirectory.fileId(filename, userId), DigestUtils.sha512Hex(Token.get()));
+
+			if(!res.isOK()){
+				for(var url : FilesClients.all()){
+					res = FilesClients.get(url).getFile(JavaDirectory.fileId(filename, userId), DigestUtils.sha512Hex(Token.get()));
+					if(res.isOK()){
+						JavaDirectory.lastGoodServer = url;
+						break;
+					}
+				}
+			}
 		}
 		return super.resultOrThrow(res);
 

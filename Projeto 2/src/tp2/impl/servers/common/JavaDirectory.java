@@ -40,9 +40,8 @@ import tp2.api.service.java.Result.ErrorCode;
 import util.Token;
 
 public class JavaDirectory implements Directory {
-
 	static final long USER_CACHE_EXPIRATION = 3000;
-
+	public static URI lastGoodServer;
 	final LoadingCache<UserInfo, Result<User>> users = CacheBuilder.newBuilder()
 			.expireAfterWrite( Duration.ofMillis(USER_CACHE_EXPIRATION))
 			.build(new CacheLoader<>() {
@@ -62,6 +61,7 @@ public class JavaDirectory implements Directory {
 	final Map<String, ExtendedFileInfo> files = new ConcurrentHashMap<>();
 	final Map<String, UserFiles> userFiles = new ConcurrentHashMap<>();
 	final Map<URI, FileCounts> fileCounts = new ConcurrentHashMap<>();
+	//final int[] serverCapacity;
 
 	@Override
 	public Result<FileInfo> writeFile(String filename, byte[] data, String userId, String password) {
@@ -78,19 +78,25 @@ public class JavaDirectory implements Directory {
 			var fileId = fileId(filename, userId);
 			var file = files.get(fileId);
 			var info = file != null ? file.info() : new FileInfo();
-			for (var uri :  orderCandidateFileServers(file)) {
+			boolean isOk = false;
+			for (var uri :  FilesClients.all()) {
 				var result = FilesClients.get(uri).writeFile(fileId, data, DigestUtils.sha512Hex(Token.get()));
 				if (result.isOK()) {
-					info.setOwner(userId);
-					info.setFilename(filename);
-					info.setFileURL(String.format("%s/files/%s", uri, fileId));
-					files.put(fileId, file = new ExtendedFileInfo(uri, fileId, info));
-					if( uf.owned().add(fileId))
-						getFileCounts(file.uri(), true).numFiles().incrementAndGet();
-					return ok(file.info());
-				} else
+					if(!files.containsKey(fileId)) {
+						info.setOwner(userId);
+						info.setFilename(filename);
+						info.setFileURL(String.format("%s/files/%s", uri, fileId));
+						files.put(fileId, file = new ExtendedFileInfo(uri, fileId, info));
+						if( uf.owned().add(fileId))
+							getFileCounts(file.uri(), true).numFiles().incrementAndGet();
+					}
+					isOk = true;
+				} else{
 					Log.info(String.format("Files.writeFile(...) to %s failed with: %s \n", uri, result));
+				}
 			}
+
+			if(isOk) return ok(file.info());
 			return error(BAD_REQUEST);
 		}
 	}
@@ -190,8 +196,9 @@ public class JavaDirectory implements Directory {
 
 		if (!file.info().hasAccess(accUserId))
 			return error(FORBIDDEN);
-		
-		return redirect( file.info().getFileURL() );
+
+		if(lastGoodServer == null) return redirect(file.info().getFileURL());
+		else return redirect(String.format("%s/files/%s", lastGoodServer, fileId));
 	}
 
 	@Override

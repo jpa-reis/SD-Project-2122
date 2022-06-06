@@ -20,7 +20,7 @@ public class UsersRestServer extends AbstractRestServer {
 	
 	private static Logger Log = Logger.getLogger(UsersRestServer.class.getName());
 
-	UsersRestServer() {
+	UsersRestServer() throws Exception {
 		super( Log, Users.SERVICE_NAME, PORT);
 	}
 	
