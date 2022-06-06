@@ -11,12 +11,7 @@ import static tp2.impl.clients.Clients.UsersClients;
 
 import java.net.URI;
 import java.time.Duration;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -61,7 +56,7 @@ public class JavaDirectory implements Directory {
 	final Map<String, ExtendedFileInfo> files = new ConcurrentHashMap<>();
 	final Map<String, UserFiles> userFiles = new ConcurrentHashMap<>();
 	final Map<URI, FileCounts> fileCounts = new ConcurrentHashMap<>();
-	//final int[] serverCapacity;
+	final Map<URI, Integer> serverCapacity = new ConcurrentHashMap<>();
 
 	@Override
 	public Result<FileInfo> writeFile(String filename, byte[] data, String userId, String password) {
@@ -78,8 +73,15 @@ public class JavaDirectory implements Directory {
 			var fileId = fileId(filename, userId);
 			var file = files.get(fileId);
 			var info = file != null ? file.info() : new FileInfo();
-			boolean isOk = false;
+			int counter = 0;
+
+			//add newfound servers
 			for (var uri :  FilesClients.all()) {
+				if(!serverCapacity.containsKey(uri)) {
+					serverCapacity.put(uri, 0);
+				}
+			}
+			for (var uri :  getServerByCapacity()) {
 				var result = FilesClients.get(uri).writeFile(fileId, data, DigestUtils.sha512Hex(Token.get()));
 				if (result.isOK()) {
 					if(!files.containsKey(fileId)) {
@@ -90,15 +92,24 @@ public class JavaDirectory implements Directory {
 						if( uf.owned().add(fileId))
 							getFileCounts(file.uri(), true).numFiles().incrementAndGet();
 					}
-					isOk = true;
+					int oldCapacity = serverCapacity.get(uri);
+					oldCapacity++;
+					serverCapacity.replace(uri, oldCapacity);
+					counter++;
+					if(counter == 2 || serverCapacity.size() == 1) return ok(file.info());
 				} else{
 					Log.info(String.format("Files.writeFile(...) to %s failed with: %s \n", uri, result));
 				}
 			}
-
-			if(isOk) return ok(file.info());
 			return error(BAD_REQUEST);
 		}
+	}
+
+	private List<URI> getServerByCapacity() {
+		return serverCapacity.entrySet().stream()
+				.sorted(Map.Entry.comparingByValue(Comparator.naturalOrder()))
+				.map(Map.Entry::getKey)
+				.collect(Collectors.toList());
 	}
 
 	
@@ -286,7 +297,6 @@ public class JavaDirectory implements Directory {
 		else
 			return fileCounts.getOrDefault( uri, new FileCounts(uri) );
 	}
-	
 	
 	static record ExtendedFileInfo(URI uri, String fileId, FileInfo info) {
 	}
