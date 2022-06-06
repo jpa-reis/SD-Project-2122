@@ -1,13 +1,7 @@
 package tp2.impl.servers.rest;
 
-import java.io.FileWriter;
-import java.io.PrintWriter;
 import java.net.URI;
-import java.security.NoSuchAlgorithmException;
 import java.util.logging.Logger;
-
-import tp2.impl.servers.zookeeper.Zookeeper;
-import org.apache.zookeeper.CreateMode;
 
 import org.glassfish.jersey.jdkhttp.JdkHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -21,7 +15,7 @@ import javax.net.ssl.SSLContext;
 public abstract class AbstractRestServer extends AbstractServer {
 
 	String service;
-
+	static String serverURI;
 	protected static String SERVER_BASE_URI = "https://%s:%s/rest";
 	
 	protected AbstractRestServer(Logger log, String service, int port) {
@@ -29,11 +23,10 @@ public abstract class AbstractRestServer extends AbstractServer {
 		this.service = service;
 	}
 
-
 	protected void start() throws Exception {
 
 		String ip = IP.hostAddress();
-		String serverURI = String.format(SERVER_BASE_URI, ip, port);
+		serverURI = String.format(SERVER_BASE_URI, ip, port);
 		
 		ResourceConfig config = new ResourceConfig();
 		

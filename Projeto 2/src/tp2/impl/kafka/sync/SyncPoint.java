@@ -1,4 +1,4 @@
-package tp2.impl.servers.kafka.sync;
+package tp2.impl.kafka.sync;
 
 import java.util.HashMap;
 import java.util.Map;

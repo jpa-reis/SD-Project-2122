@@ -32,6 +32,7 @@ import tp2.api.User;
 import tp2.api.service.java.Directory;
 import tp2.api.service.java.Result;
 import tp2.api.service.java.Result.ErrorCode;
+import tp2.impl.zookeeper.Zookeeper;
 import util.Token;
 
 public class JavaDirectory implements Directory {
@@ -59,7 +60,7 @@ public class JavaDirectory implements Directory {
 	final Map<URI, Integer> serverCapacity = new ConcurrentHashMap<>();
 
 	@Override
-	public Result<FileInfo> writeFile(String filename, byte[] data, String userId, String password) {
+	public Result<FileInfo> writeFile(String filename, byte[] data, String userId, String password)throws Exception{
 
 		if (badParam(filename) || badParam(userId))
 			return error(BAD_REQUEST);
@@ -89,6 +90,9 @@ public class JavaDirectory implements Directory {
 						info.setFilename(filename);
 						info.setFileURL(String.format("%s/files/%s", uri, fileId));
 						files.put(fileId, file = new ExtendedFileInfo(uri, fileId, info));
+
+						//zookeeper(filename, userId, password, uri, fileId);
+
 						if( uf.owned().add(fileId))
 							getFileCounts(file.uri(), true).numFiles().incrementAndGet();
 					}
@@ -110,6 +114,33 @@ public class JavaDirectory implements Directory {
 				.sorted(Map.Entry.comparingByValue(Comparator.naturalOrder()))
 				.map(Map.Entry::getKey)
 				.collect(Collectors.toList());
+	}
+
+	public void zookeeper(String filename, String userId, String password, URI uri, String fileId)throws Exception{
+		var zk = new Zookeeper("kafka");
+		byte[] newData = (filename + "/" + userId + "/" + password + "/" + String.format("%s/files/%s", uri, fileId)).getBytes();
+		zk.client().setData("/directory/directory_0000000000", newData, -1);
+	}
+
+	public FileInfo writeFileSecondary(String filename, String userId, String password, URI uri){
+
+		var uf = userFiles.computeIfAbsent(userId, (k) -> new UserFiles());
+		synchronized (uf) {
+			var fileId = fileId(filename, userId);
+			var file = files.get(fileId);
+			var info = file != null ? file.info() : new FileInfo();
+
+			if(!files.containsKey(fileId)) {
+				info.setOwner(userId);
+				info.setFilename(filename);
+				info.setFileURL(String.format("%s/files/%s", uri, fileId));
+				files.put(fileId, file = new ExtendedFileInfo(uri, fileId, info));
+				if( uf.owned().add(fileId))
+					getFileCounts(file.uri(), true).numFiles().incrementAndGet();
+			}
+			return file.info();
+		}
+
 	}
 
 	

@@ -33,6 +33,17 @@ public class RestDirectoryClient extends RestClient implements Directory {
 	}
 
 	@Override
+	public FileInfo writeFileSecondary(String filename, String userId, String password, URI uri) {
+		Response r = target.path(userId)
+				.path(filename)
+				.queryParam(RestDirectory.PASSWORD, password)
+				.request()
+				.accept(MediaType.APPLICATION_JSON)
+				.post(Entity.entity( uri, MediaType.APPLICATION_OCTET_STREAM));
+		return super.toJavaResult(r, new GenericType<FileInfo>() {});
+	}
+
+	@Override
 	public Result<Void> deleteFile(String filename, String userId, String password) {
 		Response r = target.path(userId)
 				.path(filename)

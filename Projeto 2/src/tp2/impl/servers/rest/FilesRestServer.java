@@ -3,13 +3,11 @@ package tp2.impl.servers.rest;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.apache.zookeeper.CreateMode;
 import org.glassfish.jersey.server.ResourceConfig;
 
 import tp2.api.service.java.Files;
 import tp2.impl.servers.common.InsecureHostnameVerifier;
 import tp2.impl.servers.rest.util.GenericExceptionMapper;
-import tp2.impl.servers.zookeeper.Zookeeper;
 import util.Debug;
 import util.Token;
 

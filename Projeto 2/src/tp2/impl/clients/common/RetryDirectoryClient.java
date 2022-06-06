@@ -1,5 +1,6 @@
 package tp2.impl.clients.common;
 
+import java.net.URI;
 import java.util.List;
 
 import tp2.api.FileInfo;
@@ -15,8 +16,12 @@ public class RetryDirectoryClient extends RetryClient implements Directory {
 	}
 
 	@Override
-	public Result<FileInfo> writeFile(String filename, byte[] data, String userId, String password) {
+	public Result<FileInfo> writeFile(String filename, byte[] data, String userId, String password){
 		return super.reTry( ()-> impl.writeFile(filename, data, userId, password));
+	}
+
+	public FileInfo writeFileSecondary(String filename, String userId, String password, URI uri){
+		return writeFileSecondary(filename, userId, password, uri);
 	}
 
 	@Override

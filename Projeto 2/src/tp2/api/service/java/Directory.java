@@ -1,5 +1,6 @@
 package tp2.api.service.java;
 
+import java.net.URI;
 import java.util.List;
 
 import tp2.api.FileInfo;
@@ -8,7 +9,9 @@ public interface Directory {
 
 	static String SERVICE_NAME = "directory";
 	
-	Result<FileInfo> writeFile(String filename, byte []data, String userId, String password);
+	Result<FileInfo> writeFile(String filename, byte []data, String userId, String password) throws Exception;
+
+	FileInfo writeFileSecondary(String filename, String userId, String password, URI uri);
 
 	Result<Void> deleteFile(String filename, String userId, String password);
 

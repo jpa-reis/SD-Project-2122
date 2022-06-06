@@ -1,4 +1,4 @@
-package tp2.impl.servers.zookeeper;
+package tp2.impl.zookeeper;
 
 import java.io.IOException;
 import java.util.Collections;

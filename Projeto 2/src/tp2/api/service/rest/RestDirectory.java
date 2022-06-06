@@ -44,7 +44,7 @@ public interface RestDirectory {
 	@Consumes(MediaType.APPLICATION_OCTET_STREAM)
 	@Produces(MediaType.APPLICATION_JSON)
 	FileInfo writeFile(@PathParam(FILENAME) String filename, byte[] data, @PathParam(USER_ID) String userId,
-			@QueryParam(PASSWORD) String password);
+			@QueryParam(PASSWORD) String password) throws Exception;
 
 	/**
 	 * Delete an existing file ("userId/filename"). Only the owner (userId) can

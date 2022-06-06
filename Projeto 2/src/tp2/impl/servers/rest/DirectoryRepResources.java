@@ -1,7 +1,9 @@
 package tp2.impl.servers.rest;
 
+import static tp2.impl.clients.Clients.DirectoryClients;
 import static tp2.impl.clients.Clients.FilesClients;
 
+import java.net.URI;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -12,6 +14,7 @@ import tp2.api.service.java.Directory;
 import tp2.api.service.java.Result.ErrorCode;
 import tp2.api.service.rest.RestDirectory;
 import tp2.impl.servers.common.JavaDirectory;
+import tp2.impl.zookeeper.Zookeeper;
 import util.Token;
 
 
@@ -27,11 +30,14 @@ public class DirectoryRepResources extends RestResource implements RestDirectory
         impl = new JavaDirectory();
     }
 
-    public FileInfo writeFile(String filename, byte[] data, String userId, String password) {
+    public FileInfo writeFile(String filename, byte[] data, String userId, String password) throws Exception {
         Log.info(String.format("REST writeFile: filename = %s, data.length = %d, userId = %s, password = %s \n",
                 filename, data.length, userId, password));
 
         return super.resultOrThrow(impl.writeFile(filename, data, userId, password));
+    }
+    public FileInfo writeFileSecondary(String filename, String userId, String password, URI uri){
+        return impl.writeFileSecondary(filename, userId, password, uri);
     }
 
     @Override

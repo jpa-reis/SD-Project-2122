@@ -1,4 +1,4 @@
-package tp2.impl.servers.kafka;
+package tp2.impl.kafka;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 
