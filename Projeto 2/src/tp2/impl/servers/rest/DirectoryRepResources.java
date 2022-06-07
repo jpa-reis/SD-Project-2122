@@ -11,10 +11,12 @@ import jakarta.inject.Singleton;
 import org.apache.commons.codec.digest.DigestUtils;
 import tp2.api.FileInfo;
 import tp2.api.service.java.Directory;
+import tp2.api.service.java.Result;
 import tp2.api.service.java.Result.ErrorCode;
 import tp2.api.service.rest.RestDirectory;
 import tp2.impl.servers.common.JavaDirectory;
 import tp2.impl.zookeeper.Zookeeper;
+import util.Sleep;
 import util.Token;
 
 
@@ -26,6 +28,8 @@ public class DirectoryRepResources extends RestResource implements RestDirectory
 
     final Directory impl;
 
+    int version = -1;
+
     public DirectoryRepResources() {
         impl = new JavaDirectory();
     }
@@ -33,11 +37,14 @@ public class DirectoryRepResources extends RestResource implements RestDirectory
     public FileInfo writeFile(String filename, byte[] data, String userId, String password) throws Exception {
         Log.info(String.format("REST writeFile: filename = %s, data.length = %d, userId = %s, password = %s \n",
                 filename, data.length, userId, password));
-
+        Result<FileInfo> a = impl.writeFile(filename, data, userId, password);
+        Thread.sleep(5000);
         return super.resultOrThrow(impl.writeFile(filename, data, userId, password));
     }
-    public FileInfo writeFileSecondary(String filename, String userId, String password, URI uri){
-        return impl.writeFileSecondary(filename, userId, password, uri);
+
+    public FileInfo writeFileSecondary(String filename, byte[] info) {
+        Log.info(String.format("REST writeFile: filename = %s\n", filename));
+        return super.resultOrThrow(impl.writeFileSecondary(filename, info));
     }
 
     @Override

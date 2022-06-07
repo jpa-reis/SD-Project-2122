@@ -11,7 +11,7 @@ public interface Directory {
 	
 	Result<FileInfo> writeFile(String filename, byte []data, String userId, String password) throws Exception;
 
-	FileInfo writeFileSecondary(String filename, String userId, String password, URI uri);
+	Result<FileInfo> writeFileSecondary(String filename, byte[] info);
 
 	Result<Void> deleteFile(String filename, String userId, String password);
 

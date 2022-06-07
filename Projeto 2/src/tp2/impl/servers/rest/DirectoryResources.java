@@ -27,11 +27,16 @@ public class DirectoryResources extends RestResource implements RestDirectory {
 		impl = new JavaDirectory();
 	}
 
-	public FileInfo writeFile(String filename, byte[] data, String userId, String password) {
+	public FileInfo writeFile(String filename, byte[] data, String userId, String password) throws Exception {
 		Log.info(String.format("REST writeFile: filename = %s, data.length = %d, userId = %s, password = %s \n",
 				filename, data.length, userId, password));
 				
 		return super.resultOrThrow(impl.writeFile(filename, data, userId, password));
+	}
+
+	@Override
+	public FileInfo writeFileSecondary(String filename, byte[] info) {
+		return null;
 	}
 
 	@Override

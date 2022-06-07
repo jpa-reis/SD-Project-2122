@@ -1,5 +1,6 @@
 package tp2.api.service.rest;
 
+import java.net.URI;
 import java.util.List;
 
 import jakarta.ws.rs.Consumes;
@@ -45,6 +46,12 @@ public interface RestDirectory {
 	@Produces(MediaType.APPLICATION_JSON)
 	FileInfo writeFile(@PathParam(FILENAME) String filename, byte[] data, @PathParam(USER_ID) String userId,
 			@QueryParam(PASSWORD) String password) throws Exception;
+
+	@POST
+	@Path("/{" + FILENAME + "}")
+	@Consumes(MediaType.APPLICATION_OCTET_STREAM)
+	@Produces(MediaType.APPLICATION_JSON)
+	FileInfo writeFileSecondary(@PathParam(FILENAME) String filename, byte[] info);
 
 	/**
 	 * Delete an existing file ("userId/filename"). Only the owner (userId) can
@@ -124,7 +131,7 @@ public interface RestDirectory {
 	@Path("/{" + USER_ID + "}/{" + FILENAME + "}")
 	@Produces(MediaType.APPLICATION_OCTET_STREAM)
 	byte[] getFile(@PathParam(FILENAME) String filename, @PathParam(USER_ID) String userId,
-			@QueryParam(ACC_USER_ID) String accUserId, @QueryParam(PASSWORD) String password);
+			@QueryParam(ACC_USER_ID) String accUserId, @QueryParam(PASSWORD) String password) throws InterruptedException;
 
 	/**
 	 * List the files a given user ("userId") has access to - this includes both its

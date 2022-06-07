@@ -9,6 +9,7 @@ import static tp2.api.service.java.Result.ErrorCode.NOT_FOUND;
 import static tp2.impl.clients.Clients.FilesClients;
 import static tp2.impl.clients.Clients.UsersClients;
 
+import java.io.Serializable;
 import java.net.URI;
 import java.time.Duration;
 import java.util.*;
@@ -27,6 +28,7 @@ import com.google.common.cache.LoadingCache;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Response;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang3.SerializationUtils;
 import tp2.api.FileInfo;
 import tp2.api.User;
 import tp2.api.service.java.Directory;
@@ -60,7 +62,7 @@ public class JavaDirectory implements Directory {
 	final Map<URI, Integer> serverCapacity = new ConcurrentHashMap<>();
 
 	@Override
-	public Result<FileInfo> writeFile(String filename, byte[] data, String userId, String password)throws Exception{
+	public Result<FileInfo> writeFile(String filename, byte[] data, String userId, String password) throws Exception {
 
 		if (badParam(filename) || badParam(userId))
 			return error(BAD_REQUEST);
@@ -91,7 +93,10 @@ public class JavaDirectory implements Directory {
 						info.setFileURL(String.format("%s/files/%s", uri, fileId));
 						files.put(fileId, file = new ExtendedFileInfo(uri, fileId, info));
 
-						//zookeeper(filename, userId, password, uri, fileId);
+						var zk = new Zookeeper("kafka");
+						zk.client().setData("/directory/"+zk.getChildren("/directory").stream().sorted().toList().get(0),
+											SerializationUtils.serialize(info),
+											-1);
 
 						if( uf.owned().add(fileId))
 							getFileCounts(file.uri(), true).numFiles().incrementAndGet();
@@ -116,29 +121,21 @@ public class JavaDirectory implements Directory {
 				.collect(Collectors.toList());
 	}
 
-	public void zookeeper(String filename, String userId, String password, URI uri, String fileId)throws Exception{
-		var zk = new Zookeeper("kafka");
-		byte[] newData = (filename + "/" + userId + "/" + password + "/" + String.format("%s/files/%s", uri, fileId)).getBytes();
-		zk.client().setData("/directory/directory_0000000000", newData, -1);
-	}
+	@Override
+	public Result<FileInfo> writeFileSecondary(String filename, byte[] infoBytes){
 
-	public FileInfo writeFileSecondary(String filename, String userId, String password, URI uri){
+		FileInfo info = SerializationUtils.deserialize(infoBytes);
 
-		var uf = userFiles.computeIfAbsent(userId, (k) -> new UserFiles());
+		var uf = userFiles.computeIfAbsent(info.getOwner(), (k) -> new UserFiles());
 		synchronized (uf) {
-			var fileId = fileId(filename, userId);
+			String fileId = fileId(filename, info.getOwner());
 			var file = files.get(fileId);
-			var info = file != null ? file.info() : new FileInfo();
-
 			if(!files.containsKey(fileId)) {
-				info.setOwner(userId);
-				info.setFilename(filename);
-				info.setFileURL(String.format("%s/files/%s", uri, fileId));
-				files.put(fileId, file = new ExtendedFileInfo(uri, fileId, info));
+				files.put(fileId, file = new ExtendedFileInfo(URI.create(info.getFileURL().split("/files/")[0]), fileId, info));
 				if( uf.owned().add(fileId))
 					getFileCounts(file.uri(), true).numFiles().incrementAndGet();
 			}
-			return file.info();
+			return ok(info);
 		}
 
 	}
@@ -329,7 +326,21 @@ public class JavaDirectory implements Directory {
 			return fileCounts.getOrDefault( uri, new FileCounts(uri) );
 	}
 	
-	static record ExtendedFileInfo(URI uri, String fileId, FileInfo info) {
+	static record ExtendedFileInfo(URI uri, String fileId, FileInfo info) implements Serializable {
+		@Override
+		public boolean equals(Object obj) {
+			return false;
+		}
+
+		@Override
+		public int hashCode() {
+			return 0;
+		}
+
+		@Override
+		public String toString() {
+			return null;
+		}
 	}
 
 	static record UserFiles(Set<String> owned, Set<String> shared) {

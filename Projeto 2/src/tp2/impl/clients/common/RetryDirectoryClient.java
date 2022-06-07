@@ -17,17 +17,22 @@ public class RetryDirectoryClient extends RetryClient implements Directory {
 
 	@Override
 	public Result<FileInfo> writeFile(String filename, byte[] data, String userId, String password){
-		return super.reTry( ()-> impl.writeFile(filename, data, userId, password));
+		return super.reTry( ()-> {
+			try {
+				return impl.writeFile(filename, data, userId, password);
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+		});
 	}
 
-	public FileInfo writeFileSecondary(String filename, String userId, String password, URI uri){
-		return writeFileSecondary(filename, userId, password, uri);
+	public Result<FileInfo> writeFileSecondary(String filename, byte[] info){
+		return super.reTry( ()-> impl.writeFileSecondary(filename, info));
 	}
 
 	@Override
 	public Result<Void> deleteFile(String filename, String userId, String password) {
 		return super.reTry( ()-> impl.deleteFile(filename, userId, password));
-		
 	}
 
 	@Override

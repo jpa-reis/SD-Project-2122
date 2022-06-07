@@ -1,5 +1,6 @@
 package tp2.api;
 
+import java.io.Serializable;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -7,7 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Represents a File in the system
  */
-public class FileInfo {
+public class FileInfo implements Serializable {
 	/**
 	 * userId of the owner
 	 */

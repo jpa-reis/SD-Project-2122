@@ -33,13 +33,11 @@ public class RestDirectoryClient extends RestClient implements Directory {
 	}
 
 	@Override
-	public FileInfo writeFileSecondary(String filename, String userId, String password, URI uri) {
-		Response r = target.path(userId)
-				.path(filename)
-				.queryParam(RestDirectory.PASSWORD, password)
+	public Result<FileInfo> writeFileSecondary(String filename, byte[] info) {
+		Response r = target.path(filename)
 				.request()
 				.accept(MediaType.APPLICATION_JSON)
-				.post(Entity.entity( uri, MediaType.APPLICATION_OCTET_STREAM));
+				.post(Entity.entity( info, MediaType.APPLICATION_OCTET_STREAM));
 		return super.toJavaResult(r, new GenericType<FileInfo>() {});
 	}
 

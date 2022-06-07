@@ -15,7 +15,7 @@ public interface SoapDirectory {
 
 
 	@WebMethod
-	FileInfo writeFile(String filename, byte []data, String userId, String password) throws DirectoryException;
+	FileInfo writeFile(String filename, byte []data, String userId, String password) throws Exception;
 
 	@WebMethod
 	void deleteFile(String filename, String userId, String password) throws DirectoryException;

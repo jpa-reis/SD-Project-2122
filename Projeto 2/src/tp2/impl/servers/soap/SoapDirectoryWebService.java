@@ -25,7 +25,7 @@ public class SoapDirectoryWebService extends SoapWebService implements SoapDirec
 	}
 
 	@Override
-	public FileInfo writeFile(String filename, byte[] data, String userId, String password) throws DirectoryException {
+	public FileInfo writeFile(String filename, byte[] data, String userId, String password) throws Exception {
 		Log.info(String.format("SOAP writeFile: filename = %s, data.length = %d, userId = %s, password = %s \n",
 				filename, data.length, userId, password));
 

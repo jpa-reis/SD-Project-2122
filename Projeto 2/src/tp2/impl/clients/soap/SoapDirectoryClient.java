@@ -28,6 +28,11 @@ public class SoapDirectoryClient extends SoapClient<SoapDirectory> implements Di
 	}
 
 	@Override
+	public Result<FileInfo> writeFileSecondary(String filename, byte[] info) {
+		return null;
+	}
+
+	@Override
 	public Result<Void> deleteFile(String filename, String userId, String password) {
 		return super.toJavaResult(() -> impl.deleteFile(filename, userId, password));
 	}
